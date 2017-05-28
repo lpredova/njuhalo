@@ -12,18 +12,6 @@ import (
 
 var doc *goquery.Document
 
-func TestMain(t *testing.T) {
-	main()
-}
-
-func TestGetLocation(t *testing.T) {
-	setMainLocation("iznajmljivanje-stanova", "zagreb")
-}
-
-func TestGetNotExistingLocation(t *testing.T) {
-	setMainLocation("", "zagreb123")
-}
-
 func TestGetListContent(t *testing.T) {
 	doc = loadStaticDoc("testListPage.html")
 	getListContent(doc, ".EntityList--VauVau .EntityList-item article .entity-title")
@@ -37,7 +25,7 @@ func loadStaticDoc(page string) *goquery.Document {
 	var f *os.File
 	var e error
 
-	if f, e = os.Open(fmt.Sprintf("./testData/%s", page)); e != nil {
+	if f, e = os.Open(fmt.Sprintf("./test_data/%s", page)); e != nil {
 		panic(e.Error())
 	}
 	defer f.Close()
