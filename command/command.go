@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/jasonlvhit/gocron"
+	"github.com/lpredova/shnjuskhalo/alert"
 	"github.com/lpredova/shnjuskhalo/builder"
 	"github.com/lpredova/shnjuskhalo/configuration"
 	"github.com/lpredova/shnjuskhalo/model"
@@ -22,9 +22,10 @@ var filters map[string]string
 func StartMonitoring() {
 	conf = configuration.ParseConfig()
 
-	gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(checkItems)
+	checkItems()
+	/*gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(checkItems)
 	<-gocron.Start()
-	fmt.Println("Started monitoring offers...")
+	fmt.Println("Started monitoring offers...")*/
 }
 
 // CreateConfigFile method crates boilerplate config file
@@ -78,10 +79,12 @@ func checkForMore(doc *goquery.Document) bool {
 func parseOffer(doc *goquery.Document) {
 	var offers []model.Offer
 
-	offers = parser.GetListContent(doc, ".EntityList--VauVau .EntityList-item article .entity-title", offers)
-	offers = parser.GetListContent(doc, ".EntityList--Standard .EntityList-item article .entity-title", offers)
+	offers = parser.GetListContent(doc, ".EntityList--VauVau .EntityList-item article", offers)
+	offers = parser.GetListContent(doc, ".EntityList--Standard .EntityList-item article", offers)
 
 	for _, offer := range offers {
-		fmt.Println(fmt.Sprintf("ID:%s\nURL:%s\nTitle:%s", offer.ID, offer.URL, offer.Name))
+		fmt.Println(fmt.Sprintf("ID:%s\nURL:%s\nTitle:%s\nPhoto:%s\nPrice:%s", offer.ID, offer.URL, offer.Name, offer.Image, offer.Price))
 	}
+
+	alert.SendItemsToSlack(offers)
 }
