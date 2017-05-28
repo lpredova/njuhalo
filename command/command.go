@@ -37,23 +37,26 @@ func CreateConfigFile() {
 }
 
 func checkItems() {
-	builder.SetMainLocation("iznajmljivanje-stanova", "zagreb")
+	//go runParser()
+	runParser()
+}
 
-	filters = make(map[string]string)
-	/*filters["locationId"] = "2619"
-	filters["price[max]"] = "260"
-	filters["mainArea[max]"] = "50"*/
+func runParser() {
+	// for each query check items
+	for _, query := range conf.Queries {
+		builder.SetMainLocation(query.BaseQueryPath)
+		builder.SetFilters(query.Filters)
 
-	builder.SetFilters(filters)
-	doc := builder.GetDoc()
-	parseOffer(doc)
-
-	for {
-		if !checkForMore(doc) {
-			break
-		}
-
+		doc := builder.GetDoc()
 		parseOffer(doc)
+
+		for {
+			if !checkForMore(doc) {
+				break
+			}
+
+			parseOffer(doc)
+		}
 	}
 }
 

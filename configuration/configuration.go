@@ -19,12 +19,11 @@ func ParseConfig() model.Configuration {
 		return configuration
 	}
 	decoder := json.NewDecoder(file)
-
 	decoder.Decode(&configuration)
 	return configuration
 }
 
-// CreateConfigFile creates empty configuration file in cwd
+// CreateFileConfig creates empty configuration file in cwd
 func CreateFileConfig() bool {
 
 	_, err := os.Stat(configFile)
