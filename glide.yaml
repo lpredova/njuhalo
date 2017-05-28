@@ -2,3 +2,4 @@ package: github.com/lpredova/shnjuskhalo
 import:
 - package: github.com/PuerkitoBio/goquery
 - package: github.com/jasonlvhit/gocron
+- package: github.com/codegangsta/cli

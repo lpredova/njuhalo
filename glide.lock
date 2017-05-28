@@ -1,12 +1,16 @@
-hash: d1290e96f2d1fb710205af5cf464edde8f5a2e1bf30d87b05ce8d26a5df91c8e
-updated: 2017-05-28T16:38:04.139892653+02:00
+hash: 755daf4dacbcaacc273c453781485d95a9e612d288c37e0c9b97e564b75be410
+updated: 2017-05-28T17:07:06.161995461+02:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
+- name: github.com/codegangsta/cli
+  version: d70f47eeca3afd795160003bc6e28b001d60c67c
 - name: github.com/jasonlvhit/gocron
   version: 42a5804d37aa0b9239b265e894a16b8edbf52d54
 - name: github.com/PuerkitoBio/goquery
   version: 2dc93891ab3bcc1dbc2cbf9bc6376c37f6e6f289
+- name: github.com/urfave/cli
+  version: d70f47eeca3afd795160003bc6e28b001d60c67c
 - name: golang.org/x/net
   version: 8fd7f25955530b92e73e9e1932a41b522b22ccd9
   subpackages:
