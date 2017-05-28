@@ -17,11 +17,11 @@ func TestMain(t *testing.T) {
 }
 
 func TestGetLocation(t *testing.T) {
-	getLocation("iznajmljivanje-stanova", "zagreb")
+	setMainLocation("iznajmljivanje-stanova", "zagreb")
 }
 
 func TestGetNotExistingLocation(t *testing.T) {
-	getLocation("", "zagreb123")
+	setMainLocation("", "zagreb123")
 }
 
 func TestGetListContent(t *testing.T) {

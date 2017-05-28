@@ -2,24 +2,65 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
 const baseURL string = "http://www.njuskalo.hr/"
 
+var url string
+
 func main() {
-	getLocation("iznajmljivanje-stanova", "zagreb")
+	setMainLocation("iznajmljivanje-stanova", "zagreb")
+
+	filters := make(map[string]string)
+	filters["locationId"] = "2619"
+	filters["price[max]"] = "260"
+	filters["mainArea[max]"] = "50"
+	setFilters(filters)
+
+	doc := getDoc()
+	parseOffer(doc)
 }
 
-func getLocation(category string, param string) {
-
-	doc, err := goquery.NewDocument(fmt.Sprintf("%s%s/%s", baseURL, category, param))
-	if err != nil {
-		log.Fatal(err)
+// appendFilters method adds user defined filters to url as GET param
+func setFilters(filters map[string]string) {
+	filtersNumber := len(filters)
+	if filtersNumber == 0 {
+		return
 	}
 
+	var fil string
+	var i int
+	for key, value := range filters {
+		fil += fmt.Sprintf("%s=%s", key, value)
+		i++
+
+		if i < filtersNumber {
+			fil += "&"
+		}
+	}
+
+	url = url + "?" + fil
+}
+
+func getDoc() *goquery.Document {
+	url = baseURL + url
+	fmt.Println(url)
+
+	doc, err := goquery.NewDocument(url)
+	if err != nil {
+		panic("Cannot get doc")
+	}
+
+	return doc
+}
+
+func setMainLocation(category string, param string) {
+	url = fmt.Sprintf("%s/%s", category, param)
+}
+
+func parseOffer(doc *goquery.Document) {
 	fmt.Println("Vau Vau offer")
 	getListContent(doc, ".EntityList--VauVau .EntityList-item article .entity-title")
 
