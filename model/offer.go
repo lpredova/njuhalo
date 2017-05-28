@@ -1,6 +1,6 @@
 package model
 
-type offer struct {
+type Offer struct {
 	ID   string
 	URL  string
 	Name string

@@ -4,11 +4,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/user"
 
 	"github.com/lpredova/shnjuskhalo/model"
 )
 
 const configFile = ".njhalo.json"
+
+// ParseConfig is method that parsers currently avaliable config file
+func ParseConfig() model.Configuration {
+	var configuration = model.Configuration{}
+	file, err := loadConfigFile()
+	if err != nil {
+		return configuration
+	}
+	decoder := json.NewDecoder(file)
+
+	decoder.Decode(&configuration)
+	return configuration
+}
 
 // CreateConfigFile creates empty configuration file in cwd
 func CreateConfigFile() bool {
@@ -33,4 +47,21 @@ func CreateConfigFile() bool {
 	fmt.Println(string(jsonConfig))
 	f.WriteString(string(jsonConfig))
 	return true
+}
+
+// Try to load config json file, in cwd and then user home folder
+func loadConfigFile() (*os.File, error) {
+
+	file, err := os.Open(configFile)
+	if err != nil {
+
+		usr, err := user.Current()
+		if err != nil {
+			return file, err
+		}
+		file, err = os.Open(usr.HomeDir + "/" + configFile)
+		return file, err
+	}
+
+	return file, nil
 }

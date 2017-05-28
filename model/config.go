@@ -2,12 +2,12 @@ package model
 
 // Configuration struct for holding config data
 type Configuration struct {
-	RunIntervalMinutes int    `json:"runIntervalMinutes"`
-	Username           string `json:"username"`
+	RunIntervalMin   int     `json:"runIntervalMinutes"`
+	SleepIntervalSec int     `json:"sleepIntervalSeconds"`
+	Queries          []query `json:"queries"`
 }
 
-type Neigborhoud struct {
-}
-
-type Filters struct {
+type query struct {
+	BaseQueryPath string            `json:"baseQueryPath"`
+	Filters       map[string]string `json:"filters"`
 }

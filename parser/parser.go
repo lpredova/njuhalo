@@ -13,6 +13,7 @@ var numOfItems = 0
 // GetListContent method gets items for sale and parses them
 func GetListContent(doc *goquery.Document, selector string) {
 	doc.Find(selector).Each(func(i int, s *goquery.Selection) {
+		numOfItems++
 		titleElement := s.Find("a")
 
 		itemID, _ := titleElement.Attr("name")
@@ -21,8 +22,6 @@ func GetListContent(doc *goquery.Document, selector string) {
 		itemLink, _ := titleElement.Attr("href")
 		itemLink = fmt.Sprintf("%s%s", builder.BaseURL, itemLink)
 
-		numOfItems++
-
 		fmt.Printf("\n\nReview %d:\nID:%s\n%s\n%s", numOfItems, itemID, itemTitle, itemLink)
 	})
 }
@@ -30,9 +29,8 @@ func GetListContent(doc *goquery.Document, selector string) {
 // CheckPagination method checks if there is pagination element on html
 func CheckPagination(doc *goquery.Document) bool {
 	hasPagination := false
-	doc.Find(" div.entity-list-pagination").Each(func(i int, s *goquery.Selection) {
-		titleElement := s.Find("a").Text()
-		if strings.Contains(titleElement, "Sljedeća") {
+	doc.Find("div.entity-list-pagination").Each(func(i int, s *goquery.Selection) {
+		if strings.Contains(s.Find("a").Text(), "Sljedeća") {
 			hasPagination = true
 		}
 	})
