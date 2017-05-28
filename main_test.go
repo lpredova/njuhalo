@@ -25,7 +25,7 @@ func TestGetNotExistingLocation(t *testing.T) {
 }
 
 func TestGetListContent(t *testing.T) {
-	doc = loadDoc("testListPage.html")
+	doc = loadStaticDoc("testListPage.html")
 	getListContent(doc, ".EntityList--VauVau .EntityList-item article .entity-title")
 }
 
@@ -33,7 +33,7 @@ func TestGetContent(t *testing.T) {
 	getItemContent()
 }
 
-func loadDoc(page string) *goquery.Document {
+func loadStaticDoc(page string) *goquery.Document {
 	var f *os.File
 	var e error
 
