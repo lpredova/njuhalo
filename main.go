@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/lpredova/shnjuskhalo/command"
@@ -28,8 +27,7 @@ func init() {
 			Aliases: []string{"i"},
 			Usage:   "initialize config file",
 			Action: func(c *cli.Context) error {
-				fmt.Println("Config file initialized")
-
+				command.CreateConfigFile()
 				return nil
 			},
 		},

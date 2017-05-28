@@ -8,6 +8,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/jasonlvhit/gocron"
 	"github.com/lpredova/shnjuskhalo/builder"
+	"github.com/lpredova/shnjuskhalo/configuration"
 	"github.com/lpredova/shnjuskhalo/parser"
 )
 
@@ -19,6 +20,15 @@ var filters map[string]string
 func StartMonitoring() {
 	gocron.Every(1).Minute().Do(checkItems)
 	<-gocron.Start()
+}
+
+// CreateConfigFile method crates boilerplate config file
+func CreateConfigFile() {
+	if configuration.CreateConfigFile() {
+		fmt.Println("Config file created")
+	} else {
+		fmt.Println("Error creating config file")
+	}
 }
 
 func checkItems() {
