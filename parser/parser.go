@@ -23,7 +23,7 @@ func GetListContent(doc *goquery.Document, selector string, offers []model.Offer
 
 		offers = append(offers, model.Offer{
 			Name: itemTitle,
-			URL:  fmt.Sprintf("%s%s", builder.BaseURL, itemLink),
+			URL:  itemLink,
 			ID:   itemID,
 		})
 	})
