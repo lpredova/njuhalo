@@ -29,9 +29,7 @@ func getLocation(category string, param string) {
 
 func getListContent(doc *goquery.Document, selector string) {
 
-	// Find the review items
 	doc.Find(selector).Each(func(i int, s *goquery.Selection) {
-		// For each item found, get the band and title
 		titleElement := s.Find("a")
 
 		itemID, _ := titleElement.Attr("name")
