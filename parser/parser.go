@@ -6,14 +6,13 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/lpredova/shnjuskhalo/builder"
+	"github.com/lpredova/shnjuskhalo/model"
 )
 
-var numOfItems = 0
-
 // GetListContent method gets items for sale and parses them
-func GetListContent(doc *goquery.Document, selector string) {
+func GetListContent(doc *goquery.Document, selector string, offers []model.Offer) []model.Offer {
+
 	doc.Find(selector).Each(func(i int, s *goquery.Selection) {
-		numOfItems++
 		titleElement := s.Find("a")
 
 		itemID, _ := titleElement.Attr("name")
@@ -22,8 +21,14 @@ func GetListContent(doc *goquery.Document, selector string) {
 		itemLink, _ := titleElement.Attr("href")
 		itemLink = fmt.Sprintf("%s%s", builder.BaseURL, itemLink)
 
-		fmt.Printf("\n\nReview %d:\nID:%s\n%s\n%s", numOfItems, itemID, itemTitle, itemLink)
+		offers = append(offers, model.Offer{
+			Name: itemTitle,
+			URL:  fmt.Sprintf("%s%s", builder.BaseURL, itemLink),
+			ID:   itemID,
+		})
 	})
+
+	return offers
 }
 
 // CheckPagination method checks if there is pagination element on html
