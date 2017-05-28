@@ -44,6 +44,7 @@ func SendItemsToSlack(offers []model.Offer) {
 	fmt.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
 }
 
-func sentItemsToMail() {
-
+// SendItemsToMail method that formats and sends mail to user
+func SendItemsToMail(offers []model.Offer) {
+	fmt.Printf("Sending mail")
 }

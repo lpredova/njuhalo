@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/jasonlvhit/gocron"
 	"github.com/lpredova/shnjuskhalo/alert"
 	"github.com/lpredova/shnjuskhalo/builder"
 	"github.com/lpredova/shnjuskhalo/configuration"
@@ -22,10 +23,9 @@ var filters map[string]string
 func StartMonitoring() {
 	conf = configuration.ParseConfig()
 
-	checkItems()
-	/*gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(checkItems)
+	gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(checkItems)
 	<-gocron.Start()
-	fmt.Println("Started monitoring offers...")*/
+	fmt.Println("Started monitoring offers...")
 }
 
 // CreateConfigFile method crates boilerplate config file
@@ -38,7 +38,6 @@ func CreateConfigFile() {
 }
 
 func checkItems() {
-	//go runParser()
 	runParser()
 }
 
@@ -86,5 +85,11 @@ func parseOffer(doc *goquery.Document) {
 		fmt.Println(fmt.Sprintf("ID:%s\nURL:%s\nTitle:%s\nPhoto:%s\nPrice:%s", offer.ID, offer.URL, offer.Name, offer.Image, offer.Price))
 	}
 
-	alert.SendItemsToSlack(offers)
+	if conf.Slack {
+		alert.SendItemsToSlack(offers)
+	}
+
+	if conf.Mail {
+		alert.SendItemsToMail(offers)
+	}
 }
