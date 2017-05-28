@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/jasonlvhit/gocron"
 )
 
 const baseURL string = "http://www.njuskalo.hr/"
@@ -19,6 +20,11 @@ var page = 0
 var numOfItems = 0
 
 func main() {
+	gocron.Every(1).Minute().Do(checkItems)
+	<-gocron.Start()
+}
+
+func checkItems() {
 	setMainLocation("iznajmljivanje-stanova", "zagreb")
 
 	filters = make(map[string]string)
