@@ -14,7 +14,7 @@ const configFile = ".njhalo.json"
 // ParseConfig is method that parsers currently avaliable config file
 func ParseConfig() model.Configuration {
 	var configuration = model.Configuration{}
-	file, err := loadConfigFile()
+	file, err := loadFileConfig()
 	if err != nil {
 		return configuration
 	}
@@ -25,7 +25,7 @@ func ParseConfig() model.Configuration {
 }
 
 // CreateConfigFile creates empty configuration file in cwd
-func CreateConfigFile() bool {
+func CreateFileConfig() bool {
 
 	_, err := os.Stat(configFile)
 	if err == nil {
@@ -50,7 +50,7 @@ func CreateConfigFile() bool {
 }
 
 // Try to load config json file, in cwd and then user home folder
-func loadConfigFile() (*os.File, error) {
+func loadFileConfig() (*os.File, error) {
 
 	file, err := os.Open(configFile)
 	if err != nil {

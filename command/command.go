@@ -29,7 +29,7 @@ func StartMonitoring() {
 
 // CreateConfigFile method crates boilerplate config file
 func CreateConfigFile() {
-	if configuration.CreateConfigFile() {
+	if configuration.CreateFileConfig() {
 		fmt.Println("Config file created")
 	} else {
 		fmt.Println("Error creating config file")
