@@ -1,4 +1,4 @@
-package main
+package parser
 
 import (
 	"fmt"
@@ -14,11 +14,7 @@ var doc *goquery.Document
 
 func TestGetListContent(t *testing.T) {
 	doc = loadStaticDoc("testListPage.html")
-	getListContent(doc, ".EntityList--VauVau .EntityList-item article .entity-title")
-}
-
-func TestGetContent(t *testing.T) {
-	getItemContent()
+	GetListContent(doc, ".EntityList--VauVau .EntityList-item article .entity-title", nil)
 }
 
 func loadStaticDoc(page string) *goquery.Document {

@@ -16,8 +16,8 @@ var pathURL string
 var queryURL string
 
 // SetMainLocation merhod sets path file of url
-func SetMainLocation(category string, param string) {
-	pathURL = fmt.Sprintf("%s/%s", category, param)
+func SetMainLocation(searchPath string) {
+	pathURL = searchPath
 }
 
 // SetFilters method adds user defined filters to url as GET param
