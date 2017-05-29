@@ -2,4 +2,6 @@ package: github.com/lpredova/shnjuskhalo
 import:
 - package: github.com/PuerkitoBio/goquery
 - package: github.com/jasonlvhit/gocron
-- package: github.com/urfave/cli
+- package: github.com/codegangsta/cli
+- package: github.com/caarlos0/env
+- package: github.com/nlopes/slack

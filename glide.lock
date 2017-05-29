@@ -1,10 +1,16 @@
-hash: 8ea2bbf6b794ae6ee237238ebb779a537880da8dc1a8239fe6685840b5306019
-updated: 2017-05-29T23:15:44.202601144+02:00
+hash: 114d770fbe6f31e21d19708b1c844bed02b853fbcbc18e3a235d8189650e8278
+updated: 2017-05-29T23:26:19.610566386+02:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
+- name: github.com/caarlos0/env
+  version: 9474f19b515f52326c7d197d2d097caa7fc7485e
+- name: github.com/codegangsta/cli
+  version: d70f47eeca3afd795160003bc6e28b001d60c67c
 - name: github.com/jasonlvhit/gocron
   version: 42a5804d37aa0b9239b265e894a16b8edbf52d54
+- name: github.com/nlopes/slack
+  version: c86337c0ef2486a15edd804355d9c73d2f2caed1
 - name: github.com/PuerkitoBio/goquery
   version: 2dc93891ab3bcc1dbc2cbf9bc6376c37f6e6f289
 - name: github.com/urfave/cli
@@ -14,4 +20,5 @@ imports:
   subpackages:
   - html
   - html/atom
+  - websocket
 testImports: []

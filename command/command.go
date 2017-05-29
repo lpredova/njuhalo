@@ -7,6 +7,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/jasonlvhit/gocron"
+	"github.com/lpredova/shnjuskhalo/alert"
 	"github.com/lpredova/shnjuskhalo/builder"
 	"github.com/lpredova/shnjuskhalo/configuration"
 	"github.com/lpredova/shnjuskhalo/model"
@@ -37,7 +38,6 @@ func CreateConfigFile() {
 }
 
 func checkItems() {
-	//go runParser()
 	runParser()
 }
 
@@ -78,10 +78,18 @@ func checkForMore(doc *goquery.Document) bool {
 func parseOffer(doc *goquery.Document) {
 	var offers []model.Offer
 
-	offers = parser.GetListContent(doc, ".EntityList--VauVau .EntityList-item article .entity-title", offers)
-	offers = parser.GetListContent(doc, ".EntityList--Standard .EntityList-item article .entity-title", offers)
+	offers = parser.GetListContent(doc, ".EntityList--VauVau .EntityList-item article", offers)
+	offers = parser.GetListContent(doc, ".EntityList--Standard .EntityList-item article", offers)
 
 	for _, offer := range offers {
-		fmt.Println(fmt.Sprintf("ID:%s\nURL:%s\nTitle:%s", offer.ID, offer.URL, offer.Name))
+		fmt.Println(fmt.Sprintf("ID:%s\nURL:%s\nTitle:%s\nPhoto:%s\nPrice:%s", offer.ID, offer.URL, offer.Name, offer.Image, offer.Price))
+	}
+
+	if conf.Slack {
+		alert.SendItemsToSlack(offers)
+	}
+
+	if conf.Mail {
+		alert.SendItemsToMail(offers)
 	}
 }
