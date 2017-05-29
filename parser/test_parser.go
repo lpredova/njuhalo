@@ -13,8 +13,8 @@ import (
 var doc *goquery.Document
 
 func TestGetListContent(t *testing.T) {
-	doc = loadStaticDoc("testListPage.html")
-	GetListContent(doc, ".EntityList--VauVau .EntityList-item article .entity-title", nil)
+	//doc = loadStaticDoc("testListPage.html")
+	//GetListContent(doc, ".EntityList--VauVau .EntityList-item article .entity-title", nil)
 }
 
 func loadStaticDoc(page string) *goquery.Document {
