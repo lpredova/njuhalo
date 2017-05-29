@@ -3,3 +3,5 @@ import:
 - package: github.com/PuerkitoBio/goquery
 - package: github.com/jasonlvhit/gocron
 - package: github.com/codegangsta/cli
+- package: github.com/caarlos0/env
+- package: github.com/nlopes/slack

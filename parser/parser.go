@@ -13,19 +13,34 @@ import (
 func GetListContent(doc *goquery.Document, selector string, offers []model.Offer) []model.Offer {
 
 	doc.Find(selector).Each(func(i int, s *goquery.Selection) {
-		titleElement := s.Find("a")
+		titleElement := s.Find(".entity-title a")
 
 		itemID, _ := titleElement.Attr("name")
 		itemTitle := titleElement.Text()
 
 		itemLink, _ := titleElement.Attr("href")
-		itemLink = fmt.Sprintf("%s%s", builder.BaseURL, itemLink)
+		itemLink = fmt.Sprintf("%s%s", strings.TrimSuffix(builder.BaseURL, "/"), itemLink)
 
-		offers = append(offers, model.Offer{
-			Name: itemTitle,
-			URL:  itemLink,
-			ID:   itemID,
-		})
+		imageElement := s.Find(".entity-thumbnail img")
+		image, _ := imageElement.Attr("data-src")
+		image = fmt.Sprintf("%s%s", "http:", image)
+
+		priceElement := s.Find(".entity-prices .price-item .price--eur")
+		price := priceElement.Text()
+
+		descriptionElement := s.Find(".entity-description-main")
+		description := descriptionElement.Text()
+
+		if len(itemID) > 0 {
+			offers = append(offers, model.Offer{
+				ID:          itemID,
+				URL:         itemLink,
+				Name:        itemTitle,
+				Image:       image,
+				Price:       price,
+				Description: description,
+			})
+		}
 	})
 
 	return offers
