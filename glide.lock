@@ -1,10 +1,8 @@
-hash: 755daf4dacbcaacc273c453781485d95a9e612d288c37e0c9b97e564b75be410
-updated: 2017-05-28T17:07:06.161995461+02:00
+hash: 8ea2bbf6b794ae6ee237238ebb779a537880da8dc1a8239fe6685840b5306019
+updated: 2017-05-29T23:15:44.202601144+02:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
-- name: github.com/codegangsta/cli
-  version: d70f47eeca3afd795160003bc6e28b001d60c67c
 - name: github.com/jasonlvhit/gocron
   version: 42a5804d37aa0b9239b265e894a16b8edbf52d54
 - name: github.com/PuerkitoBio/goquery
@@ -12,7 +10,7 @@ imports:
 - name: github.com/urfave/cli
   version: d70f47eeca3afd795160003bc6e28b001d60c67c
 - name: golang.org/x/net
-  version: 8fd7f25955530b92e73e9e1932a41b522b22ccd9
+  version: 48359f4f600b3a2d5cf657458e3f940021631a56
   subpackages:
   - html
   - html/atom
