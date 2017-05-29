@@ -1,5 +1,5 @@
-hash: 114d770fbe6f31e21d19708b1c844bed02b853fbcbc18e3a235d8189650e8278
-updated: 2017-05-29T23:26:19.610566386+02:00
+hash: 59499c0d094d3a3ff419886852635c059c571c7d84a94c5c49e17fd69fb4aae1
+updated: 2017-05-29T23:52:57.116079524+02:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
@@ -9,6 +9,8 @@ imports:
   version: d70f47eeca3afd795160003bc6e28b001d60c67c
 - name: github.com/jasonlvhit/gocron
   version: 42a5804d37aa0b9239b265e894a16b8edbf52d54
+- name: github.com/mattn/go-sqlite3
+  version: 83772a7051f5e30d8e59746a9e43dfa706b72f3b
 - name: github.com/nlopes/slack
   version: c86337c0ef2486a15edd804355d9c73d2f2caed1
 - name: github.com/PuerkitoBio/goquery
@@ -18,6 +20,7 @@ imports:
 - name: golang.org/x/net
   version: 48359f4f600b3a2d5cf657458e3f940021631a56
   subpackages:
+  - context
   - html
   - html/atom
   - websocket
