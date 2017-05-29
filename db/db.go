@@ -9,11 +9,11 @@ import (
 )
 
 func InsertItem() {
-	db, err := sql.Open("sqlite3", "./njhalo.db")
+	db, err := sql.Open("sqlite3", "./njuhalo.db")
 	checkErr(err)
 
 	// insert
-	stmt, err := db.Prepare("INSERT INTO userinfo(username, departname, created) values(?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO items(username, departname, created) values(?,?,?)")
 	checkErr(err)
 
 	res, err := stmt.Exec("astaxie", "研发部门", "2012-12-09")
@@ -36,7 +36,7 @@ func InsertItem() {
 	fmt.Println(affect)
 
 	// query
-	rows, err := db.Query("SELECT * FROM userinfo")
+	rows, err := db.Query("SELECT * FROM items")
 	checkErr(err)
 	var uid int
 	var username string
