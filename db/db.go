@@ -3,70 +3,56 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/lpredova/shnjuskhalo/model"
+	_ "github.com/mattn/go-sqlite3" // SQLlite db
 )
 
-func InsertItem() {
+// InsertItem method inserts new offer into database
+func InsertItem(offers []model.Offer) bool {
 	db, err := sql.Open("sqlite3", "./njuhalo.db")
-	checkErr(err)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+	defer db.Close()
 
-	// insert
-	stmt, err := db.Prepare("INSERT INTO items(username, departname, created) values(?,?,?)")
-	checkErr(err)
-
-	res, err := stmt.Exec("astaxie", "研发部门", "2012-12-09")
-	checkErr(err)
-
-	id, err := res.LastInsertId()
-	checkErr(err)
-
-	fmt.Println(id)
-	// update
-	stmt, err = db.Prepare("update userinfo set username=? where uid=?")
-	checkErr(err)
-
-	res, err = stmt.Exec("astaxieupdate", id)
-	checkErr(err)
-
-	affect, err := res.RowsAffected()
-	checkErr(err)
-
-	fmt.Println(affect)
-
-	// query
-	rows, err := db.Query("SELECT * FROM items")
-	checkErr(err)
-	var uid int
-	var username string
-	var department string
-	var created time.Time
-
-	for rows.Next() {
-		err = rows.Scan(&uid, &username, &department, &created)
-		checkErr(err)
-		fmt.Println(uid)
-		fmt.Println(username)
-		fmt.Println(department)
-		fmt.Println(created)
+	stmt, err := db.Prepare("INSERT INTO items(itemID, url, name, image, price, description) values(?,?,?,?,?,?)")
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
 	}
 
-	rows.Close() //good habit to close
+	for _, offer := range offers {
+		_, err := stmt.Exec(offer.ID, offer.URL, offer.Name, offer.Image, offer.Price, offer.Description)
+		if err != nil {
+			fmt.Println(err.Error())
+			return false
+		}
+	}
 
-	// delete
-	stmt, err = db.Prepare("delete from userinfo where uid=?")
+	return true
+}
+
+// GetItem method that checks if there is alreay offer with that ID
+func GetItem(itemID string) bool {
+
+	db, err := sql.Open("sqlite3", "./njuhalo.db")
+	defer db.Close()
 	checkErr(err)
 
-	res, err = stmt.Exec(id)
-	checkErr(err)
+	rows, err := db.Query(fmt.Sprintf("SELECT * FROM items where itemID = %s", itemID))
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
 
-	affect, err = res.RowsAffected()
-	checkErr(err)
+	for rows.Next() {
+		return true
+	}
 
-	fmt.Println(affect)
-
-	db.Close()
+	fmt.Println("Item WILL BE ADDED")
+	return false
 }
 
 func checkErr(err error) {

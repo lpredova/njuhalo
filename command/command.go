@@ -78,21 +78,24 @@ func checkForMore(doc *goquery.Document) bool {
 
 func parseOffer(doc *goquery.Document) {
 	var offers []model.Offer
+	var finalOffers []model.Offer
 
 	offers = parser.GetListContent(doc, ".EntityList--VauVau .EntityList-item article", offers)
 	offers = parser.GetListContent(doc, ".EntityList--Standard .EntityList-item article", offers)
 
 	for _, offer := range offers {
-		fmt.Println(fmt.Sprintf("ID:%s\nURL:%s\nTitle:%s\nPhoto:%s\nPrice:%s", offer.ID, offer.URL, offer.Name, offer.Image, offer.Price))
+		if !db.GetItem(offer.ID) {
+			finalOffers = append(finalOffers, offer)
+		}
 	}
 
-	if conf.Slack {
-		alert.SendItemsToSlack(offers)
-	}
+	if db.InsertItem(finalOffers) {
+		if conf.Slack {
+			alert.SendItemsToSlack(finalOffers)
+		}
 
-	if conf.Mail {
-		alert.SendItemsToMail(offers)
+		if conf.Mail {
+			alert.SendItemsToMail(finalOffers)
+		}
 	}
-
-	db.InsertItem()
 }

@@ -36,3 +36,8 @@ queries it would be active
     }
   ]
 }
+
+### Build
+
+
+go build -ldflags -s
