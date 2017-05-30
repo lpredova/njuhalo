@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/jasonlvhit/gocron"
 	"github.com/lpredova/shnjuskhalo/alert"
 	"github.com/lpredova/shnjuskhalo/builder"
 	"github.com/lpredova/shnjuskhalo/configuration"
@@ -23,10 +24,9 @@ var filters map[string]string
 func StartMonitoring() {
 	conf = configuration.ParseConfig()
 
-	checkItems()
-	/*gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(checkItems)
+	gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(runParser)
 	<-gocron.Start()
-	fmt.Println("Started monitoring offers...")*/
+	fmt.Println("Started monitoring offers...")
 }
 
 // CreateConfigFile method crates boilerplate config file
@@ -38,12 +38,7 @@ func CreateConfigFile() {
 	}
 }
 
-func checkItems() {
-	runParser()
-}
-
 func runParser() {
-	// for each query check items
 	for _, query := range conf.Queries {
 		builder.SetMainLocation(query.BaseQueryPath)
 		builder.SetFilters(query.Filters)

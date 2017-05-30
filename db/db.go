@@ -8,9 +8,11 @@ import (
 	_ "github.com/mattn/go-sqlite3" // SQLlite db
 )
 
+const dbName = "./njuhalo.db"
+
 // InsertItem method inserts new offer into database
 func InsertItem(offers []model.Offer) bool {
-	db, err := sql.Open("sqlite3", "./njuhalo.db")
+	db, err := sql.Open("sqlite3", dbName)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
@@ -36,10 +38,12 @@ func InsertItem(offers []model.Offer) bool {
 
 // GetItem method that checks if there is alreay offer with that ID
 func GetItem(itemID string) bool {
-
-	db, err := sql.Open("sqlite3", "./njuhalo.db")
+	db, err := sql.Open("sqlite3", dbName)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
 	defer db.Close()
-	checkErr(err)
 
 	rows, err := db.Query(fmt.Sprintf("SELECT * FROM items where itemID = %s", itemID))
 	if err != nil {
@@ -53,10 +57,4 @@ func GetItem(itemID string) bool {
 
 	fmt.Println("Item WILL BE ADDED")
 	return false
-}
-
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
 }

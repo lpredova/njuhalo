@@ -1,15 +1,13 @@
-shNjuskhalo
+new(/njuː/)halo
 ===========
 
-shNjuskhalo is simple script that watches popular online store njuskalo.hr and
+newhalo is simple script written in Golang. It watches popular online store njuskalo.hr and
 notifies owner for new occurrences of wanted items.
 
 ### Usage
-njuhalo s
-
 
 You need to configure your watcher how often do you want to run it and for which
-queries it would be active
+queries it would be active.
 
 {
   "runIntervalMinutes": 1,
@@ -28,16 +26,17 @@ queries it would be active
       }
     },
     {
-      "baseQueryPath": "item/cars/path",
-      "filter":{
-        "maxPrice" : "11450"
-        "Year" : "1992"
+      "baseQueryPath": "iznajmljivanje-stanova/zagreb",
+      "filters":{
+        "locationId": "2619",
+        "price[max]": "260",
+        "mainArea[max]": "50"
       }
     }
   ]
 }
 
-### Build
 
+### Build
 
 go build -ldflags -s
