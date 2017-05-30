@@ -46,5 +46,4 @@ func SendItemsToSlack(offers []model.Offer) {
 
 // SendItemsToMail method that formats and sends mail to user
 func SendItemsToMail(offers []model.Offer) {
-	fmt.Printf("Sending mail")
 }

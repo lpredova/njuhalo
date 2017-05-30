@@ -5,3 +5,4 @@ import:
 - package: github.com/codegangsta/cli
 - package: github.com/caarlos0/env
 - package: github.com/nlopes/slack
+- package: github.com/mattn/go-sqlite3
