@@ -4,26 +4,19 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/caarlos0/env"
 	"github.com/lpredova/shnjuskhalo/configuration"
 	"github.com/lpredova/shnjuskhalo/model"
 	"github.com/nlopes/slack"
 )
 
-type slackConfig struct {
-	SlackToken string `env:"SHNJUSKHALO_SLACK_TOKEN" envDefault:"myPreciousToken"`
-}
-
-var slackConf slackConfig
 var conf model.Configuration
 
 // SendItemsToSlack method that formats and send messages to slack
 func SendItemsToSlack(offers []model.Offer) {
-	env.Parse(&slackConf)
-
-	api := slack.New(slackConf.SlackToken)
-	params := slack.PostMessageParameters{}
 	conf = configuration.ParseConfig()
+
+	api := slack.New(conf.SlackToken)
+	params := slack.PostMessageParameters{}
 
 	var attachments []slack.Attachment
 	for _, offer := range offers {
