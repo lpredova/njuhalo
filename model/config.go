@@ -5,6 +5,7 @@ type Configuration struct {
 	RunIntervalMin          int    `json:"runIntervalMinutes"`
 	SleepIntervalSec        int    `json:"sleepIntervalSeconds"`
 	Slack                   bool   `json:"slack"`
+	SlackToken              string `json:"slackToken"`
 	SlackChannelID          string `json:"slackChannelId"`
 	SlackNotificiationColor string `json:"slackNotificationColor"`
 	Mail                    bool   `json:"mail"`
