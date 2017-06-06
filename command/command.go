@@ -26,7 +26,6 @@ func StartMonitoring() {
 	//gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(runParser)
 	//<-gocron.Start()
 
-	db.ClearOldItems()
 	runParser()
 	fmt.Println("Started monitoring offers...")
 }

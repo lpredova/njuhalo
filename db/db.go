@@ -58,25 +58,3 @@ func GetItem(itemID string) bool {
 
 	return false
 }
-
-// ClearOldItems checks db for items older than 90 days and does not track them anymore
-func ClearOldItems() {
-
-	time := int32(time.Now().AddDate(0, 0, -90).Unix())
-
-	db, err := sql.Open("sqlite3", dbName)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	defer db.Close()
-
-	stmt, err := db.Prepare("DELETE FROM items where createdAt < ?")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	_, err = stmt.Exec(time)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-
-}
