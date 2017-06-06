@@ -6,3 +6,5 @@ import:
 - package: github.com/caarlos0/env
 - package: github.com/nlopes/slack
 - package: github.com/mattn/go-sqlite3
+- package: gopkg.in/mailgun/mailgun-go.v1
+  version: v1.1.0

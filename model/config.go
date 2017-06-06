@@ -9,7 +9,10 @@ type Configuration struct {
 	SlackChannelID          string `json:"slackChannelId"`
 	SlackNotificiationColor string `json:"slackNotificationColor"`
 	Mail                    bool   `json:"mail"`
-	To                      string `json:"to"`
+	MaliTo                  string `json:"to"`
+	MailGunDomain           string `json:"mailgunDomain"`
+	MailGunAPIKey           string `json:"mailgunAPIKey"`
+	MailGunPublicKey        string `json:"mailgunPublicKey"`
 	Queries                 []struct {
 		BaseQueryPath string            `json:"baseQueryPath,omitempty"`
 		Filters       map[string]string `json:"filters,omitempty"`

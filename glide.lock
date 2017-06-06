@@ -1,5 +1,5 @@
-hash: 59499c0d094d3a3ff419886852635c059c571c7d84a94c5c49e17fd69fb4aae1
-updated: 2017-05-29T23:52:57.116079524+02:00
+hash: 4c23db7bea92c3cd08c7f2c0cdb15018201b9e8d033c9bd55288f5d53d8ffc2b
+updated: 2017-06-06T17:28:52.084315885+02:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
@@ -12,16 +12,20 @@ imports:
 - name: github.com/mattn/go-sqlite3
   version: 83772a7051f5e30d8e59746a9e43dfa706b72f3b
 - name: github.com/nlopes/slack
-  version: c86337c0ef2486a15edd804355d9c73d2f2caed1
+  version: f243c7602fdf906248fc1f165284daa4e4d2d09e
+- name: github.com/pkg/errors
+  version: c605e284fe17294bda444b34710735b29d1a9d90
 - name: github.com/PuerkitoBio/goquery
   version: 2dc93891ab3bcc1dbc2cbf9bc6376c37f6e6f289
 - name: github.com/urfave/cli
   version: d70f47eeca3afd795160003bc6e28b001d60c67c
 - name: golang.org/x/net
-  version: 48359f4f600b3a2d5cf657458e3f940021631a56
+  version: 8fd7f25955530b92e73e9e1932a41b522b22ccd9
   subpackages:
   - context
   - html
   - html/atom
   - websocket
+- name: gopkg.in/mailgun/mailgun-go.v1
+  version: a4002e2df2e8ca2da6a6fbb4a72871b504e49f50
 testImports: []
