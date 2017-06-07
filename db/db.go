@@ -3,6 +3,8 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"os"
+	"os/user"
 	"time"
 
 	"github.com/lpredova/shnjuskhalo/model"
@@ -57,4 +59,67 @@ func GetItem(itemID string) bool {
 	}
 
 	return false
+}
+
+// CreateDatabase creates sqllite db file in user home dir
+func CreateDatabase() bool {
+
+	usr, err := user.Current()
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	err = os.MkdirAll(usr.HomeDir+"/.njuhalo/", 0777)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	if _, err = os.Stat(usr.HomeDir + "/.njuhalo"); os.IsNotExist(err) {
+		os.Mkdir(usr.HomeDir+"/.njuhalo", 0777)
+	}
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	f, err := os.Create(usr.HomeDir + "/.njuhalo/" + "njuhalo.db")
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+	defer f.Close()
+
+	db, err := sql.Open("sqlite3", usr.HomeDir+"/.njuhalo/"+"njuhalo.db")
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	stmt, err := db.Prepare("CREATE TABLE items (id integer PRIMARY KEY AUTOINCREMENT, itemID integer, url text, name text, image text, price text, description text, createdAt integer)")
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	_, err = stmt.Exec()
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	stmt, err = db.Prepare("CREATE INDEX index_itemID ON items (itemID)")
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	_, err = stmt.Exec()
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	return true
 }

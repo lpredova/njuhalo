@@ -37,6 +37,13 @@ func CreateConfigFile() {
 	} else {
 		fmt.Println("Error creating config file")
 	}
+
+	if db.CreateDatabase() {
+		fmt.Println("Database created")
+	} else {
+		fmt.Println("Error creating database")
+	}
+
 }
 
 func runParser() {
