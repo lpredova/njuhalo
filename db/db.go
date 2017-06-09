@@ -3,6 +3,8 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"os"
+	"os/user"
 	"time"
 
 	"github.com/lpredova/shnjuskhalo/model"
@@ -11,9 +13,12 @@ import (
 
 const dbName = "./njuhalo.db"
 
+var usr, _ = user.Current()
+var dbPath = usr.HomeDir + "/.njuhalo/" + "njuhalo.db"
+
 // InsertItem method inserts new offer into database
 func InsertItem(offers []model.Offer) bool {
-	db, err := sql.Open("sqlite3", dbName)
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
@@ -39,7 +44,7 @@ func InsertItem(offers []model.Offer) bool {
 
 // GetItem method that checks if there is alreay offer with that ID
 func GetItem(itemID string) bool {
-	db, err := sql.Open("sqlite3", dbName)
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
@@ -57,4 +62,67 @@ func GetItem(itemID string) bool {
 	}
 
 	return false
+}
+
+// CreateDatabase creates sqllite db file in user home dir
+func CreateDatabase() bool {
+
+	usr, err := user.Current()
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	err = os.MkdirAll(usr.HomeDir+"/.njuhalo/", 0755)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	if _, err = os.Stat(usr.HomeDir + "/.njuhalo"); os.IsNotExist(err) {
+		os.Mkdir(usr.HomeDir+"/.njuhalo", 0755)
+	}
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	f, err := os.Create(dbPath)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+	defer f.Close()
+
+	db, err := sql.Open("sqlite3", dbPath)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	stmt, err := db.Prepare("CREATE TABLE items (id integer PRIMARY KEY AUTOINCREMENT, itemID integer, url text, name text, image text, price text, description text, createdAt integer)")
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	_, err = stmt.Exec()
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	stmt, err = db.Prepare("CREATE INDEX index_itemID ON items (itemID)")
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	_, err = stmt.Exec()
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	return true
 }
