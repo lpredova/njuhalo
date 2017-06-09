@@ -13,9 +13,12 @@ import (
 
 const dbName = "./njuhalo.db"
 
+var usr, _ = user.Current()
+var dbPath = usr.HomeDir + "/.njuhalo/" + "njuhalo.db"
+
 // InsertItem method inserts new offer into database
 func InsertItem(offers []model.Offer) bool {
-	db, err := sql.Open("sqlite3", dbName)
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
@@ -41,7 +44,7 @@ func InsertItem(offers []model.Offer) bool {
 
 // GetItem method that checks if there is alreay offer with that ID
 func GetItem(itemID string) bool {
-	db, err := sql.Open("sqlite3", dbName)
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
@@ -70,28 +73,28 @@ func CreateDatabase() bool {
 		return false
 	}
 
-	err = os.MkdirAll(usr.HomeDir+"/.njuhalo/", 0777)
+	err = os.MkdirAll(usr.HomeDir+"/.njuhalo/", 0755)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
 	}
 
 	if _, err = os.Stat(usr.HomeDir + "/.njuhalo"); os.IsNotExist(err) {
-		os.Mkdir(usr.HomeDir+"/.njuhalo", 0777)
+		os.Mkdir(usr.HomeDir+"/.njuhalo", 0755)
 	}
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
 	}
 
-	f, err := os.Create(usr.HomeDir + "/.njuhalo/" + "njuhalo.db")
+	f, err := os.Create(dbPath)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
 	}
 	defer f.Close()
 
-	db, err := sql.Open("sqlite3", usr.HomeDir+"/.njuhalo/"+"njuhalo.db")
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
