@@ -7,7 +7,7 @@ import (
 )
 
 // BaseURL is constant part of url bound to domain
-const BaseURL string = "http://www.njuskalo.hr/"
+const BaseURL string = "http://www.njuskalo.hr"
 
 // PathURL changable path
 var pathURL string

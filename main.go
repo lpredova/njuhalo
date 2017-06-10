@@ -12,7 +12,7 @@ var app *cli.App
 func init() {
 	app = cli.NewApp()
 	app.Version = "0.0.1"
-	app.Name = "shNjuskHalo"
+	app.Name = "njuhalo"
 	app.Usage = "Monitor Njuskalo as a PRO"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -37,6 +37,15 @@ func init() {
 			Usage:   "start monitoring njuskalo for items",
 			Action: func(c *cli.Context) error {
 				command.StartMonitoring()
+				return nil
+			},
+		},
+		{
+			Name:    "add",
+			Aliases: []string{"a"},
+			Usage:   "adds query to watch to config",
+			Action: func(c *cli.Context) error {
+				command.SaveQuery(c.Args().Get(0))
 				return nil
 			},
 		},

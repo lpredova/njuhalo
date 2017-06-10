@@ -9,9 +9,12 @@ import (
 	"github.com/lpredova/shnjuskhalo/model"
 )
 
-const configFile = ".njhalo.json"
+const configFile = "config.json"
 
-// ParseConfig is method that parsers currently avaliable config file
+var usr, _ = user.Current()
+var path = usr.HomeDir + "/.njuhalo/" + configFile
+
+// ParseConfig parsers currently avaliable config file
 func ParseConfig() model.Configuration {
 	var configuration = model.Configuration{}
 	file, err := loadFileConfig()
@@ -24,43 +27,47 @@ func ParseConfig() model.Configuration {
 }
 
 // CreateFileConfig creates empty configuration file in cwd
-func CreateFileConfig() bool {
+func CreateFileConfig(conf model.Configuration) bool {
 
-	_, err := os.Stat(configFile)
-	if err == nil {
-		return false
-	}
-
-	f, err := os.Create(configFile)
+	f, err := os.Create(path)
 	if err != nil {
+		fmt.Println(err.Error())
+
 		return false
 	}
 	defer f.Close()
 
-	conf := &model.Configuration{}
 	jsonConfig, err := json.MarshalIndent(conf, "", "  ")
 	if err != nil {
+		fmt.Println(err.Error())
+
 		return false
 	}
 
-	fmt.Println(string(jsonConfig))
 	f.WriteString(string(jsonConfig))
 	return true
 }
 
-// Try to load config json file, in cwd and then user home folder
+// Load config json file, in cwd and then user home folder
 func loadFileConfig() (*os.File, error) {
 
 	file, err := os.Open(configFile)
 	if err != nil {
-
-		usr, err := user.Current()
-		if err != nil {
-			return file, err
-		}
-		file, err = os.Open(usr.HomeDir + "/" + configFile)
+		file, err = os.Open(path)
 		return file, err
 	}
 
 	return file, nil
+}
+
+// AppendFilterToConfig appends new filter to queries
+func AppendFilterToConfig(filter model.Query) bool {
+	configuration := ParseConfig()
+	configuration.Queries = append(configuration.Queries, filter)
+
+	if CreateFileConfig(configuration) {
+		return true
+	}
+
+	return false
 }
