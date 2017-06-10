@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/jasonlvhit/gocron"
 	"github.com/lpredova/njuhalo/alert"
 	"github.com/lpredova/njuhalo/builder"
 	"github.com/lpredova/njuhalo/configuration"
@@ -21,17 +22,6 @@ var page = 0
 var doc *goquery.Document
 var conf model.Configuration
 var filters map[string]string
-
-// StartMonitoring starts watcher that monitors items
-func StartMonitoring() {
-	conf = configuration.ParseConfig()
-
-	//gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(runParser)
-	//<-gocron.Start()
-
-	runParser()
-	fmt.Println("Started monitoring offers...")
-}
 
 // CreateConfigFile method crates boilerplate config file
 func CreateConfigFile() {
@@ -48,6 +38,15 @@ func CreateConfigFile() {
 	} else {
 		fmt.Println("Error creating database")
 	}
+}
+
+// StartMonitoring starts watcher that monitors items
+func StartMonitoring() {
+	conf = configuration.ParseConfig()
+
+	fmt.Println("Started monitoring offers...")
+	gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(runParser)
+	<-gocron.Start()
 }
 
 func runParser() {
