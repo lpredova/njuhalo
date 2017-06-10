@@ -63,22 +63,7 @@ func loadFileConfig() (*os.File, error) {
 // AppendFilterToConfig appends new filter to queries
 func AppendFilterToConfig(filter model.Query) bool {
 	configuration := ParseConfig()
-	filters := []model.Query{}
-
-	fmt.Println(configuration.Queries)
-
-	for k, v := range configuration.Queries {
-		fmt.Println(k)
-
-		filters = append(filters, v)
-	}
-	filters = append(filters, filter)
-
-	fmt.Println(filters)
-
-	//configuration.Queries = append(configuration.Queries, filter)
-
-	configuration.Queries = filters
+	configuration.Queries = append(configuration.Queries, filter)
 
 	if CreateFileConfig(configuration) {
 		return true
