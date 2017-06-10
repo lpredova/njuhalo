@@ -35,7 +35,9 @@ func StartMonitoring() {
 
 // CreateConfigFile method crates boilerplate config file
 func CreateConfigFile() {
-	if configuration.CreateFileConfig() {
+
+	config := model.Configuration{}
+	if configuration.CreateFileConfig(config) {
 		fmt.Println("Config file created")
 	} else {
 		fmt.Println("Error creating config file")
@@ -46,7 +48,6 @@ func CreateConfigFile() {
 	} else {
 		fmt.Println("Error creating database")
 	}
-
 }
 
 func runParser() {
@@ -131,6 +132,11 @@ func SaveQuery(query string) {
 				Filters:       rawFilters,
 			}
 
+			if configuration.AppendFilterToConfig(query) {
+				fmt.Println("URL added to filters")
+			} else {
+				fmt.Println("Error adding URL to filters")
+			}
 		}
 	}
 }
