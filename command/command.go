@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/lpredova/shnjuskhalo/alert"
-	"github.com/lpredova/shnjuskhalo/builder"
-	"github.com/lpredova/shnjuskhalo/configuration"
-	"github.com/lpredova/shnjuskhalo/db"
-	"github.com/lpredova/shnjuskhalo/model"
-	"github.com/lpredova/shnjuskhalo/parser"
+	"github.com/lpredova/njuhalo/alert"
+	"github.com/lpredova/njuhalo/builder"
+	"github.com/lpredova/njuhalo/configuration"
+	"github.com/lpredova/njuhalo/db"
+	"github.com/lpredova/njuhalo/model"
+	"github.com/lpredova/njuhalo/parser"
 )
 
 var page = 0

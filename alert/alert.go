@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/lpredova/shnjuskhalo/configuration"
-	"github.com/lpredova/shnjuskhalo/model"
+	"github.com/lpredova/njuhalo/configuration"
+	"github.com/lpredova/njuhalo/model"
 	"github.com/nlopes/slack"
 	mailgun "gopkg.in/mailgun/mailgun-go.v1"
 )

@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/lpredova/shnjuskhalo/builder"
-	"github.com/lpredova/shnjuskhalo/model"
+	"github.com/lpredova/njuhalo/builder"
+	"github.com/lpredova/njuhalo/model"
 )
 
 // GetListContent method gets items for sale and parses them

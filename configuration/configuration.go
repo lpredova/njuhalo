@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/user"
 
-	"github.com/lpredova/shnjuskhalo/model"
+	"github.com/lpredova/njuhalo/model"
 )
 
 const configFile = "config.json"

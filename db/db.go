@@ -7,7 +7,7 @@ import (
 	"os/user"
 	"time"
 
-	"github.com/lpredova/shnjuskhalo/model"
+	"github.com/lpredova/njuhalo/model"
 	_ "github.com/mattn/go-sqlite3" // SQLlite db
 )
 

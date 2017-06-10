@@ -1,4 +1,4 @@
-package: github.com/lpredova/shnjuskhalo
+package: github.com/lpredova/njuhalo
 import:
 - package: github.com/PuerkitoBio/goquery
 - package: github.com/jasonlvhit/gocron

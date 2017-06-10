@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/lpredova/shnjuskhalo/command"
+	"github.com/lpredova/njuhalo/command"
 	"github.com/urfave/cli"
 )
 
