@@ -2,7 +2,10 @@ package command
 
 import (
 	"fmt"
+	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -99,6 +102,35 @@ func parseOffer(doc *goquery.Document) {
 
 		if conf.Mail {
 			alert.SendItemsToMail(finalOffers)
+		}
+	}
+}
+
+// SaveQuery method saves query url to config
+func SaveQuery(query string) {
+	resp, err := http.Get(query)
+	if err != nil {
+		fmt.Println("Error checking URL")
+	}
+
+	if resp.StatusCode == 200 {
+		u, err := url.Parse(query)
+		if err != nil {
+			fmt.Println("Error parsing URL")
+		}
+
+		if u.Host == "www.njuskalo.hr" {
+			parsed, _ := url.ParseQuery(u.RawQuery)
+			rawFilters := make(map[string]string)
+			for k, v := range parsed {
+				rawFilters[k] = strings.Join(v, "")
+			}
+
+			query := model.Query{
+				BaseQueryPath: u.Path,
+				Filters:       rawFilters,
+			}
+
 		}
 	}
 }

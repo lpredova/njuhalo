@@ -53,7 +53,6 @@ func loadFileConfig() (*os.File, error) {
 
 	file, err := os.Open(configFile)
 	if err != nil {
-
 		usr, err := user.Current()
 		if err != nil {
 			return file, err
