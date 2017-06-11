@@ -14,7 +14,7 @@ const configFile = "config.json"
 var usr, _ = user.Current()
 var path = usr.HomeDir + "/.njuhalo/" + configFile
 
-// ParseConfig parsers currently avaliable config file
+// ParseConfig parsers currently available config file
 func ParseConfig() model.Configuration {
 	var configuration = model.Configuration{}
 	file, err := loadFileConfig()

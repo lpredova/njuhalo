@@ -9,7 +9,7 @@ import (
 // BaseURL is constant part of url bound to domain
 const BaseURL string = "http://www.njuskalo.hr"
 
-// PathURL changable path
+// PathURL changeable path
 var pathURL string
 
 // QueryURL query params of GET request
