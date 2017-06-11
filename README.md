@@ -82,11 +82,12 @@ If there is no such file you can create it manually or just run:
 Adding queries can be pain in the ass so you can simply paste it like this 
 
 ``
-/.njuhalo a {http://www.njuskalo.hr/path?query=1&query=2}
+/.njuhalo a http://www.njuskalo.hr/path?query=1&query=2
 ``
 
 That will parse query and save it to the default config file.
 
+Number of queries is not limited and you can add as much as you want.
 
 ## Development
 
@@ -101,6 +102,28 @@ To build binary from scratch:
 ``
 go build
 ``
+
+## MIT License
+
+Copyright (c) 2017 Lovro Predovan
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ---
 **Lovro Predovan**
