@@ -1,5 +1,8 @@
 new(/njuː/)halo
 ===========
+[![Go Report Card](https://goreportcard.com/badge/github.com/lpredova/njuhalo)](https://goreportcard.com/report/github.com/lpredova/njuhalo)
+
+
 ![Njuh njuh](https://68.media.tumblr.com/1da155f441f0c4030225c3811e0c32cd/tumblr_o6ngw4Ve1t1rt6u7do1_500.gif)
 
 
