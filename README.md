@@ -12,22 +12,23 @@ That way you can
 
 ```
 NAME:
-   njuhalo - Monitor Njuskalo as a PRO
+   njuhalo - Watch Njuskalo better than anyone
 
 USAGE:
    njuhalo [global options] command [command options] [arguments...]
 
 VERSION:
-   0.0.1
+   1.0.0
 
 COMMANDS:
-     init, i   initialize config file
-     start, s  start monitoring njuskalo for items
-     add, a    adds query to watch to config
-     help, h   Shows a list of commands or help for one command
+     init, initialize, i  initialize configuration and database file in home dir
+     start, serve, s      start monitoring njuskalo for items
+     add, query, a        adds query to watch to config
+     print, p             Prints currently active config file
+     help, h              Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --config value, --con value  PATH to config file (default: "$HOME/njhalo.json")
+   --config value, --con value  PATH to config file (default: "$HOME/.njuhalo/config.json")
    --help, -h                   show help
    --version, -v                print the version
 ```
