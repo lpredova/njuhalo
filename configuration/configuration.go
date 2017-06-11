@@ -29,11 +29,11 @@ func ParseConfig() model.Configuration {
 // PrintConfig prints configuration file
 func PrintConfig() {
 	var configuration = ParseConfig()
-	configJson, err := json.MarshalIndent(configuration, "", "  ")
+	configJSON, err := json.MarshalIndent(configuration, "", "  ")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(string(configJson))
+	fmt.Println(string(configJSON))
 }
 
 // CreateFileConfig creates empty configuration file in cwd

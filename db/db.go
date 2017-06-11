@@ -57,6 +57,7 @@ func GetItem(itemID string) bool {
 		fmt.Println(err.Error())
 		return false
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		return true
@@ -94,6 +95,7 @@ func CreateDatabase() bool {
 		fmt.Println(err.Error())
 		return false
 	}
+	defer db.Close()
 
 	stmt, err := db.Prepare("CREATE TABLE items (id integer PRIMARY KEY AUTOINCREMENT, itemID integer, url text, name text, image text, price text, description text, createdAt integer)")
 	if err != nil {
