@@ -9,7 +9,6 @@ new(/njuː/)halo
 Njuhalo is watcher written in Go. 
 It watches popular online store [Njuškalo.hr](https://www.njuskalo.hr) and
 notifies owner for new occurrences of wanted items that match filters in config.
-That way you can
 
 ## Usage
 
