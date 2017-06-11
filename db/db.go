@@ -14,7 +14,8 @@ import (
 const dbName = "./njuhalo.db"
 
 var usr, _ = user.Current()
-var dbPath = usr.HomeDir + "/.njuhalo/" + "njuhalo.db"
+var homePath = usr.HomeDir + "/.njuhalo/"
+var dbPath = homePath + "njuhalo.db"
 
 // InsertItem method inserts new offer into database
 func InsertItem(offers []model.Offer) bool {
@@ -67,20 +68,14 @@ func GetItem(itemID string) bool {
 // CreateDatabase creates sqllite db file in user home dir
 func CreateDatabase() bool {
 
-	usr, err := user.Current()
+	err := os.MkdirAll(homePath, 0755)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
 	}
 
-	err = os.MkdirAll(usr.HomeDir+"/.njuhalo/", 0755)
-	if err != nil {
-		fmt.Println(err.Error())
-		return false
-	}
-
-	if _, err = os.Stat(usr.HomeDir + "/.njuhalo"); os.IsNotExist(err) {
-		os.Mkdir(usr.HomeDir+"/.njuhalo", 0755)
+	if _, err = os.Stat(homePath); os.IsNotExist(err) {
+		os.Mkdir(homePath, 0755)
 	}
 	if err != nil {
 		fmt.Println(err.Error())

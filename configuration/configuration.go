@@ -26,13 +26,22 @@ func ParseConfig() model.Configuration {
 	return configuration
 }
 
+// PrintConfig prints configuration file
+func PrintConfig() {
+	var configuration = ParseConfig()
+	configJson, err := json.MarshalIndent(configuration, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(configJson))
+}
+
 // CreateFileConfig creates empty configuration file in cwd
 func CreateFileConfig(conf model.Configuration) bool {
 
 	f, err := os.Create(path)
 	if err != nil {
 		fmt.Println(err.Error())
-
 		return false
 	}
 	defer f.Close()
@@ -40,7 +49,6 @@ func CreateFileConfig(conf model.Configuration) bool {
 	jsonConfig, err := json.MarshalIndent(conf, "", "  ")
 	if err != nil {
 		fmt.Println(err.Error())
-
 		return false
 	}
 
