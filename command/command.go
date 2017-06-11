@@ -40,6 +40,11 @@ func CreateConfigFile() {
 	}
 }
 
+// PrintConfigFile prints currently active config file for user to see
+func PrintConfigFile() {
+	configuration.PrintConfig()
+}
+
 // StartMonitoring starts watcher that monitors items
 func StartMonitoring() {
 	conf = configuration.ParseConfig()
