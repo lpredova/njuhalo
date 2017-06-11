@@ -49,26 +49,34 @@ func PrintConfigFile() {
 func StartMonitoring() {
 	conf = configuration.ParseConfig()
 
-	runParser()
-	gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(runParser)
-	<-gocron.Start()
+	if conf.RunIntervalMin > 0 {
+		runParser()
+		gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(runParser)
+		<-gocron.Start()
+	} else {
+		fmt.Println("Please provide valid watcher run interval (larger than 0)")
+	}
 }
 
 func runParser() {
-	for _, query := range conf.Queries {
-		builder.SetMainLocation(query.BaseQueryPath)
-		builder.SetFilters(query.Filters)
+	if len(conf.Queries) > 0 {
+		for _, query := range conf.Queries {
+			builder.SetMainLocation(query.BaseQueryPath)
+			builder.SetFilters(query.Filters)
 
-		doc := builder.GetDoc()
-		parseOffer(doc)
-
-		for {
-			if !checkForMore(doc) {
-				break
-			}
-
+			doc := builder.GetDoc()
 			parseOffer(doc)
+
+			for {
+				if !checkForMore(doc) {
+					break
+				}
+
+				parseOffer(doc)
+			}
 		}
+	} else {
+		fmt.Println("There are no filters in your config, please check help")
 	}
 }
 
