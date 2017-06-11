@@ -26,17 +26,17 @@ var filters map[string]string
 // CreateConfigFile method crates boilerplate config file
 func CreateConfigFile() {
 
+	if db.CreateDatabase() {
+		fmt.Println("Database created")
+	} else {
+		fmt.Println("Error creating database")
+	}
+
 	config := model.Configuration{}
 	if configuration.CreateFileConfig(config) {
 		fmt.Println("Config file created")
 	} else {
 		fmt.Println("Error creating config file")
-	}
-
-	if db.CreateDatabase() {
-		fmt.Println("Database created")
-	} else {
-		fmt.Println("Error creating database")
 	}
 }
 
@@ -49,7 +49,7 @@ func PrintConfigFile() {
 func StartMonitoring() {
 	conf = configuration.ParseConfig()
 
-	fmt.Println("Started monitoring offers...")
+	runParser()
 	gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(runParser)
 	<-gocron.Start()
 }
@@ -113,34 +113,42 @@ func parseOffer(doc *goquery.Document) {
 
 // SaveQuery method saves query url to config
 func SaveQuery(query string) {
-	resp, err := http.Get(query)
-	if err != nil {
-		fmt.Println("Error checking URL")
-	}
-
-	if resp.StatusCode == 200 {
-		u, err := url.Parse(query)
+	if len(query) > 0 {
+		resp, err := http.Get(query)
 		if err != nil {
-			fmt.Println("Error parsing URL")
+			fmt.Println("Error checking URL")
 		}
 
-		if u.Host == "www.njuskalo.hr" {
-			parsed, _ := url.ParseQuery(u.RawQuery)
-			rawFilters := make(map[string]string)
-			for k, v := range parsed {
-				rawFilters[k] = strings.Join(v, "")
+		if resp.StatusCode == 200 {
+			u, err := url.Parse(query)
+			if err != nil {
+				fmt.Println("Error parsing URL")
 			}
 
-			query := model.Query{
-				BaseQueryPath: u.Path,
-				Filters:       rawFilters,
-			}
+			if u.Host == "www.njuskalo.hr" {
+				parsed, _ := url.ParseQuery(u.RawQuery)
+				rawFilters := make(map[string]string)
+				for k, v := range parsed {
+					rawFilters[k] = strings.Join(v, "")
+				}
 
-			if configuration.AppendFilterToConfig(query) {
-				fmt.Println("URL added to filters")
+				query := model.Query{
+					BaseQueryPath: u.Path,
+					Filters:       rawFilters,
+				}
+
+				if configuration.AppendFilterToConfig(query) {
+					fmt.Println("URL added to filters")
+				} else {
+					fmt.Println("Error adding URL to filters")
+				}
 			} else {
-				fmt.Println("Error adding URL to filters")
+				fmt.Println("Given url is not from njuskalo")
 			}
+		} else {
+			fmt.Println("This URL is not alive")
 		}
+	} else {
+		fmt.Println("Please provide valid njuskalo.hr URL")
 	}
 }

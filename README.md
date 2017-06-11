@@ -96,10 +96,10 @@ Location of all njuhalo config and db is in your home folder
 {$HOME}/.njuhalo
 ``
 
-To build binary you have to add some flags:
+To build binary from scratch:
 
 ``
-go build -ldflags -s
+go build
 ``
 
 ---
