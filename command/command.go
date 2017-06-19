@@ -119,6 +119,15 @@ func parseOffer(doc *goquery.Document) {
 	}
 }
 
+// ClearQueries removes all queries from config
+func ClearQueries() {
+	if configuration.ClearQueries() {
+		fmt.Println("Queries cleared")
+	} else {
+		fmt.Println("Error clearing queries")
+	}
+}
+
 // SaveQuery method saves query url to config
 func SaveQuery(query string) {
 	if len(query) > 0 {
