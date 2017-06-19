@@ -11,9 +11,11 @@ var app *cli.App
 
 func init() {
 	app = cli.NewApp()
-	app.Version = "1.0.0"
+	app.Version = "1.0.1"
 	app.Name = "njuhalo"
-	app.Usage = "Watch Njuskalo better than anyone"
+	app.Author = "Lovro Predovan"
+	app.Email = "lovro.predovan[at]gmail.com"
+	app.Usage = "Watcher for Njuskalo.hr items"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "config, con",
@@ -46,6 +48,15 @@ func init() {
 			Usage:   "adds query to watch to config",
 			Action: func(c *cli.Context) error {
 				command.SaveQuery(c.Args().Get(0))
+				return nil
+			},
+		},
+		{
+			Name:    "clean, clear",
+			Aliases: []string{"c"},
+			Usage:   "clears all query from config",
+			Action: func(c *cli.Context) error {
+				command.ClearQueries()
 				return nil
 			},
 		},

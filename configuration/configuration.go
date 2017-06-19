@@ -68,6 +68,18 @@ func loadFileConfig() (*os.File, error) {
 	return file, nil
 }
 
+// ClearQueries removes all queries from config
+func ClearQueries() bool {
+	configuration := ParseConfig()
+	configuration.Queries = nil
+
+	if CreateFileConfig(configuration) {
+		return true
+	}
+
+	return false
+}
+
 // AppendFilterToConfig appends new filter to queries
 func AppendFilterToConfig(filter model.Query) bool {
 	configuration := ParseConfig()
