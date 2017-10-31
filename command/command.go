@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -131,10 +132,20 @@ func ClearQueries() {
 // SaveQuery method saves query url to config
 func SaveQuery(query string) {
 	if len(query) > 0 {
-		resp, err := http.Get(query)
+
+		nj := randomString()
+		client := &http.Client{}
+		req, err := http.NewRequest("GET", query, nil)
+		if err != nil {
+			fmt.Println("Unable to create request")
+		}
+
+		req.Header.Set("User-Agent", nj)
+		resp, err := client.Do(req)
 		if err != nil {
 			fmt.Println("Error checking URL")
 		}
+		defer resp.Body.Close()
 
 		if resp.StatusCode == 200 {
 			u, err := url.Parse(query)
@@ -168,4 +179,14 @@ func SaveQuery(query string) {
 	} else {
 		fmt.Println("Please provide valid njuskalo.hr URL")
 	}
+}
+
+func randomString() string {
+	n := rand.Intn(20)
+	b := make([]byte, n)
+	if _, err := rand.Read(b); err != nil {
+		panic(err)
+	}
+	s := fmt.Sprintf("%X", b)
+	return s
 }
