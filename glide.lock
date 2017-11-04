@@ -1,26 +1,28 @@
-hash: 4c23db7bea92c3cd08c7f2c0cdb15018201b9e8d033c9bd55288f5d53d8ffc2b
-updated: 2017-06-06T17:28:52.084315885+02:00
+hash: 50a6013e1517f89b18bc9bd6fe6f919278152f372f5acb4d919db138256dcd91
+updated: 2017-11-04T18:35:30.547493283+01:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
 - name: github.com/caarlos0/env
-  version: 9474f19b515f52326c7d197d2d097caa7fc7485e
+  version: 0cf029d5748c52beb2c9d20c81880cb4bdf8f788
 - name: github.com/codegangsta/cli
-  version: d70f47eeca3afd795160003bc6e28b001d60c67c
+  version: 44cb242eeb4d76cc813fdc69ba5c4b224677e799
 - name: github.com/jasonlvhit/gocron
   version: 42a5804d37aa0b9239b265e894a16b8edbf52d54
+- name: github.com/lpredova/goquery
+  version: e2a68cedeae3f8bea7b339d2696bf25eaad115a9
 - name: github.com/mattn/go-sqlite3
-  version: 83772a7051f5e30d8e59746a9e43dfa706b72f3b
+  version: 615c193e01d8d462eef7ee390171506f531a1c9a
 - name: github.com/nlopes/slack
-  version: f243c7602fdf906248fc1f165284daa4e4d2d09e
+  version: 5cde21b8b96a43fc3435a1f514123d14fd7eabdc
 - name: github.com/pkg/errors
-  version: c605e284fe17294bda444b34710735b29d1a9d90
+  version: f15c970de5b76fac0b59abb32d62c17cc7bed265
 - name: github.com/PuerkitoBio/goquery
-  version: 2dc93891ab3bcc1dbc2cbf9bc6376c37f6e6f289
+  version: 1a71cc719d0d5b9e4f14ae072bef08b576b0bab5
 - name: github.com/urfave/cli
-  version: d70f47eeca3afd795160003bc6e28b001d60c67c
+  version: 44cb242eeb4d76cc813fdc69ba5c4b224677e799
 - name: golang.org/x/net
-  version: 8fd7f25955530b92e73e9e1932a41b522b22ccd9
+  version: feeb485667d1fdabe727840fe00adc22431bc86e
   subpackages:
   - context
   - html

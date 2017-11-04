@@ -3,7 +3,7 @@ package builder
 import (
 	"fmt"
 
-	"github.com/PuerkitoBio/goquery"
+	"github.com/lpredova/goquery"
 )
 
 // BaseURL is constant part of url bound to domain

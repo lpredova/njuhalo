@@ -9,6 +9,8 @@ import (
 	"github.com/lpredova/njuhalo/model"
 )
 
+const interval = 5
+const sleep = 3
 const configFile = "config.json"
 
 var usr, _ = user.Current()
@@ -38,6 +40,9 @@ func PrintConfig() {
 
 // CreateFileConfig creates empty configuration file in cwd
 func CreateFileConfig(conf model.Configuration) bool {
+
+	conf.RunIntervalMin = interval
+	conf.SleepIntervalSec = sleep
 
 	f, err := os.Create(path)
 	if err != nil {

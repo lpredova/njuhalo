@@ -1,6 +1,6 @@
 package: github.com/lpredova/njuhalo
 import:
-- package: github.com/PuerkitoBio/goquery
+- package: github.com/lpredova/goquery
 - package: github.com/jasonlvhit/gocron
 - package: github.com/codegangsta/cli
 - package: github.com/caarlos0/env

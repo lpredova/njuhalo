@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/PuerkitoBio/goquery"
+	"github.com/lpredova/goquery"
 	"github.com/lpredova/njuhalo/builder"
 	"github.com/lpredova/njuhalo/model"
 )

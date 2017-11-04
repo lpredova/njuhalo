@@ -31,7 +31,7 @@ Or you can copy it to /usr/local/bin/ to make it global:
 cp njuhalo /usr/local/bin/
 ``
 
-Now you can use it from anywhere by running from your bash:
+Now you can use it from anywhere by running from your cmd:
 
 ``
 njuhalo
@@ -45,7 +45,7 @@ USAGE:
    njuhalo [global options] command [command options] [arguments...]
 
 VERSION:
-   1.0.1
+   1.0.2
 
 AUTHOR:
    Lovro Predovan <lovro.predovan[at]gmail.com>
@@ -74,7 +74,13 @@ You can customize queries and filters so as intervals between fetching each page
 
 ### Configuration
 
-Configuration file looks like this:
+Configuration file is located in your home directory:
+
+``
+{$HOME}/.njuhalo
+``
+
+There are two files, config.json and njuhalo.db. Config file is the one that is meant to be modified.
 
 ```
 {
@@ -100,15 +106,26 @@ Configuration file looks like this:
 }
 
 ```
-It can be found in:
-``
-{$HOME}/.njuhalo
-``
+
+#### Create config file
 
 If there is no such file you can create it manually or just run:
+
 ``
 /.njuhalo i
 ``
+
+#### Slack configuration
+In order to configure slack notification you need to add token and channelId.
+Token can be found here (if you don't have it, you must create it):
+
+[https://api.slack.com/custom-integrations/legacy-tokens
+](https://api.slack.com/custom-integrations/legacy-tokens)
+
+To get channel ID simply enter web version of Slack and select wanted channel. After that simply copy last part of url:
+
+[https://yourCompany.slack.com/messages/thisIsChannelId](https://yourCompany.slack.com/messages/thisIsChannelId) 
+
 
 ### Adding queries
 Adding queries can be pain in the ass so you can simply paste it like this 

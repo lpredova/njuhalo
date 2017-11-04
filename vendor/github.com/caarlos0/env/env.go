@@ -42,19 +42,26 @@ func Parse(v interface{}) error {
 
 func doParse(ref reflect.Value) error {
 	refType := ref.Type()
+	var errorList []string
+
 	for i := 0; i < refType.NumField(); i++ {
 		value, err := get(refType.Field(i))
 		if err != nil {
-			return err
+			errorList = append(errorList, err.Error())
+			continue
 		}
 		if value == "" {
 			continue
 		}
 		if err := set(ref.Field(i), refType.Field(i), value); err != nil {
-			return err
+			errorList = append(errorList, err.Error())
+			continue
 		}
 	}
-	return nil
+	if len(errorList) == 0 {
+		return nil
+	}
+	return errors.New(strings.Join(errorList, ". "))
 }
 
 func get(field reflect.StructField) (string, error) {
@@ -92,7 +99,7 @@ func parseKeyForOption(key string) (string, []string) {
 }
 
 func getRequired(key string) (string, error) {
-	if value := os.Getenv(key); value != "" {
+	if value, ok := os.LookupEnv(key); ok {
 		return value, nil
 	}
 	// We do not use fmt.Errorf to avoid another import.
@@ -100,8 +107,8 @@ func getRequired(key string) (string, error) {
 }
 
 func getOr(key, defaultValue string) string {
-	value := os.Getenv(key)
-	if value != "" {
+	value, ok := os.LookupEnv(key)
+	if ok {
 		return value
 	}
 	return defaultValue
@@ -126,6 +133,12 @@ func set(field reflect.Value, refType reflect.StructField, value string) error {
 			return err
 		}
 		field.SetInt(intValue)
+	case reflect.Uint:
+		uintValue, err := strconv.ParseUint(value, 10, 32)
+		if err != nil {
+			return err
+		}
+		field.SetUint(uintValue)
 	case reflect.Float32:
 		v, err := strconv.ParseFloat(value, 32)
 		if err != nil {
@@ -218,7 +231,6 @@ func parseInts(data []string) ([]int, error) {
 	return intSlice, nil
 }
 
-
 func parseInt64s(data []string) ([]int64, error) {
 	var intSlice []int64
 
@@ -231,8 +243,6 @@ func parseInt64s(data []string) ([]int64, error) {
 	}
 	return intSlice, nil
 }
-
-
 
 func parseFloat32s(data []string) ([]float32, error) {
 	var float32Slice []float32

@@ -2,14 +2,18 @@ package command
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
+	"os/signal"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
-	"github.com/PuerkitoBio/goquery"
 	"github.com/jasonlvhit/gocron"
+	"github.com/lpredova/goquery"
 	"github.com/lpredova/njuhalo/alert"
 	"github.com/lpredova/njuhalo/builder"
 	"github.com/lpredova/njuhalo/configuration"
@@ -48,11 +52,21 @@ func PrintConfigFile() {
 // StartMonitoring starts watcher that monitors items
 func StartMonitoring() {
 	conf = configuration.ParseConfig()
-
 	if conf.RunIntervalMin > 0 {
+
 		runParser()
+
 		gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(runParser)
 		<-gocron.Start()
+
+		c := make(chan os.Signal, 2)
+		signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+		go func() {
+			<-c
+			gocron.Clear()
+			os.Exit(1)
+		}()
+
 	} else {
 		fmt.Println("Please provide valid watcher run interval (larger than 0)")
 	}
@@ -68,11 +82,9 @@ func runParser() {
 			parseOffer(doc)
 
 			for {
-				if !checkForMore(doc) {
-					break
+				if checkForMore(doc) {
+					parseOffer(doc)
 				}
-
-				parseOffer(doc)
 			}
 		}
 	} else {
@@ -86,6 +98,11 @@ func checkForMore(doc *goquery.Document) bool {
 	if parser.CheckPagination(doc) {
 		page++
 		time.Sleep(time.Second * time.Duration(int(conf.SleepIntervalSec)))
+
+		if filters == nil {
+			filters = make(map[string]string)
+		}
+
 		filters["page"] = strconv.Itoa(page)
 		builder.SetFilters(filters)
 		builder.GetDoc()
@@ -102,9 +119,14 @@ func parseOffer(doc *goquery.Document) {
 	offers = parser.GetListContent(doc, ".EntityList--VauVau .EntityList-item article", offers)
 	offers = parser.GetListContent(doc, ".EntityList--Standard .EntityList-item article", offers)
 
-	for _, offer := range offers {
+	if len(offers) == 0 {
+		fmt.Println("No new offers found!")
+	}
+
+	for index, offer := range offers {
 		if !db.GetItem(offer.ID) {
 			finalOffers = append(finalOffers, offer)
+			fmt.Println(fmt.Sprintf("%d. %s - (%s) %s ", index, offer.Name, offer.Price, offer.URL))
 		}
 	}
 
@@ -131,10 +153,20 @@ func ClearQueries() {
 // SaveQuery method saves query url to config
 func SaveQuery(query string) {
 	if len(query) > 0 {
-		resp, err := http.Get(query)
+
+		nj := randomString()
+		client := &http.Client{}
+		req, err := http.NewRequest("GET", query, nil)
+		if err != nil {
+			fmt.Println("Unable to create request")
+		}
+
+		req.Header.Set("User-Agent", nj)
+		resp, err := client.Do(req)
 		if err != nil {
 			fmt.Println("Error checking URL")
 		}
+		defer resp.Body.Close()
 
 		if resp.StatusCode == 200 {
 			u, err := url.Parse(query)
@@ -168,4 +200,14 @@ func SaveQuery(query string) {
 	} else {
 		fmt.Println("Please provide valid njuskalo.hr URL")
 	}
+}
+
+func randomString() string {
+	n := rand.Intn(20)
+	b := make([]byte, n)
+	if _, err := rand.Read(b); err != nil {
+		panic(err)
+	}
+	s := fmt.Sprintf("%X", b)
+	return s
 }
