@@ -43,6 +43,31 @@ func InsertItem(offers []model.Offer) bool {
 	return true
 }
 
+// GetItems gets all items stored in database
+func GetItems() (*[]model.Offer, error) {
+
+	db, err := sql.Open("sqlite3", dbPath)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT id,url,name,image,price,description FROM items ORDER BY id DESC;")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	offers := []model.Offer{}
+	for rows.Next() {
+		offer := model.Offer{}
+		rows.Scan(&offer.ID, &offer.URL, &offer.Name, &offer.Image, &offer.Price, &offer.Description)
+		offers = append(offers, offer)
+	}
+
+	return &offers, nil
+}
+
 // GetItem method that checks if there is alreay offer with that ID
 func GetItem(itemID string) bool {
 	db, err := sql.Open("sqlite3", dbPath)

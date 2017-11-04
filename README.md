@@ -15,29 +15,29 @@ It supports mailgun and slack notifications at the moment.
 ## Usage
 Clone the repository !
 
-``
+``bash
 git clone git@github.com:lpredova/njuhalo.git
 ``
 
 Now you can use njuhalo from local folder by running:
  
-``
+``bash
 ./njuhalo
 ``
 
 Or you can copy it to /usr/local/bin/ to make it global:
 
-``
+``bash
 cp njuhalo /usr/local/bin/
 ``
 
 Now you can use it from anywhere by running from your cmd:
 
-``
+``bash
 njuhalo
 ``
 
-```
+```bash
 NAME:
    njuhalo - Watcher for Njuskalo.hr items
 
@@ -56,6 +56,8 @@ COMMANDS:
      add, query, a        adds query to watch to config
      clean, clear, c      clears all query from config
      print, p             Prints currently active config file
+     list, l              lists currently saved items
+     parse, r             Runs parser only once
      help, h              Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -76,13 +78,13 @@ You can customize queries and filters so as intervals between fetching each page
 
 Configuration file is located in your home directory:
 
-``
+``bash
 {$HOME}/.njuhalo
 ``
 
 There are two files, config.json and njuhalo.db. Config file is the one that is meant to be modified.
 
-```
+```javascript
 {
 	"runIntervalMinutes": 1,
 	"sleepIntervalSeconds": 2,
@@ -111,7 +113,7 @@ There are two files, config.json and njuhalo.db. Config file is the one that is 
 
 If there is no such file you can create it manually or just run:
 
-``
+``bash
 /.njuhalo i
 ``
 

@@ -69,6 +69,24 @@ func init() {
 				return nil
 			},
 		},
+		{
+			Name:    "list",
+			Aliases: []string{"l"},
+			Usage:   "lists currently saved items",
+			Action: func(c *cli.Context) error {
+				command.ListItems()
+				return nil
+			},
+		},
+		{
+			Name:    "parse",
+			Aliases: []string{"r"},
+			Usage:   "Runs parser only once",
+			Action: func(c *cli.Context) error {
+				command.Parse()
+				return nil
+			},
+		},
 	}
 }
 
