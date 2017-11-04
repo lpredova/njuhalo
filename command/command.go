@@ -49,6 +49,28 @@ func PrintConfigFile() {
 	configuration.PrintConfig()
 }
 
+// ListItems lists all items in database
+func ListItems() {
+	offers, err := db.GetItems()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	if len(*offers) == 0 {
+		fmt.Println("No offers saved yet :)")
+	}
+
+	for index, offer := range *offers {
+		fmt.Println(fmt.Sprintf("%d. %s - (%s) %s ", index, offer.Name, offer.Price, offer.URL))
+	}
+}
+
+// Parse runs parser only once :)
+func Parse() {
+	conf = configuration.ParseConfig()
+	runParser()
+}
+
 // StartMonitoring starts watcher that monitors items
 func StartMonitoring() {
 	conf = configuration.ParseConfig()
@@ -81,11 +103,11 @@ func runParser() {
 			doc := builder.GetDoc()
 			parseOffer(doc)
 
-			for {
+			/*for {
 				if checkForMore(doc) {
 					parseOffer(doc)
 				}
-			}
+			}*/
 		}
 	} else {
 		fmt.Println("There are no filters in your config, please check help")
