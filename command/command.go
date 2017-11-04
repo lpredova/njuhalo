@@ -56,6 +56,10 @@ func ListItems() {
 		fmt.Println(err.Error())
 	}
 
+	if len(*offers) == 0 {
+		fmt.Println("No offers saved yet :)")
+	}
+
 	for index, offer := range *offers {
 		fmt.Println(fmt.Sprintf("%d. %s - (%s) %s ", index, offer.Name, offer.Price, offer.URL))
 	}
