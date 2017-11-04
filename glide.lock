@@ -1,5 +1,5 @@
-hash: 377288dac2c3cab7f2267b5efd874d368dbec2227bc171c675db11d7a402a656
-updated: 2017-11-04T15:54:08.924922822+01:00
+hash: 50a6013e1517f89b18bc9bd6fe6f919278152f372f5acb4d919db138256dcd91
+updated: 2017-11-04T18:35:30.547493283+01:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
@@ -9,6 +9,8 @@ imports:
   version: 44cb242eeb4d76cc813fdc69ba5c4b224677e799
 - name: github.com/jasonlvhit/gocron
   version: 42a5804d37aa0b9239b265e894a16b8edbf52d54
+- name: github.com/lpredova/goquery
+  version: e2a68cedeae3f8bea7b339d2696bf25eaad115a9
 - name: github.com/mattn/go-sqlite3
   version: 615c193e01d8d462eef7ee390171506f531a1c9a
 - name: github.com/nlopes/slack

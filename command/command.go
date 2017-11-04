@@ -12,8 +12,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/PuerkitoBio/goquery"
 	"github.com/jasonlvhit/gocron"
+	"github.com/lpredova/goquery"
 	"github.com/lpredova/njuhalo/alert"
 	"github.com/lpredova/njuhalo/builder"
 	"github.com/lpredova/njuhalo/configuration"

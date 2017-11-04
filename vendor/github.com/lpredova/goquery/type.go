@@ -2,7 +2,9 @@ package goquery
 
 import (
 	"errors"
+	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"net/url"
 
@@ -33,7 +35,14 @@ func NewDocumentFromNode(root *html.Node) *Document {
 // node, ready to be manipulated.
 func NewDocument(url string) (*Document, error) {
 	// Load the URL
-	res, e := http.Get(url)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Println("Unable to create request")
+	}
+
+	req.Header.Set("User-Agent", randomString())
+	res, e := client.Do(req)
 	if e != nil {
 		return nil, e
 	}
@@ -125,6 +134,16 @@ func compileMatcher(s string) Matcher {
 		return invalidMatcher{}
 	}
 	return cs
+}
+
+func randomString() string {
+	n := rand.Intn(20)
+	b := make([]byte, n)
+	if _, err := rand.Read(b); err != nil {
+		panic(err)
+	}
+	s := fmt.Sprintf("%X", b)
+	return s
 }
 
 // invalidMatcher is a Matcher that always fails to match.
