@@ -15,27 +15,27 @@ It supports mailgun and slack notifications at the moment.
 ## Usage
 Clone the repository !
 
-``bash
-git clone git@github.com:lpredova/njuhalo.git
-``
+```bash
+$ git clone git@github.com:lpredova/njuhalo.git
+```
 
 Now you can use njuhalo from local folder by running:
  
-``bash
-./njuhalo
-``
+```bash
+$ ./njuhalo
+```
 
 Or you can copy it to /usr/local/bin/ to make it global:
 
-``bash
-cp njuhalo /usr/local/bin/
-``
+```bash
+$ cp njuhalo /usr/local/bin/
+```
 
 Now you can use it from anywhere by running from your cmd:
 
-``bash
-njuhalo
-``
+```bash
+$ njuhalo
+```
 
 ```bash
 NAME:
@@ -78,9 +78,9 @@ You can customize queries and filters so as intervals between fetching each page
 
 Configuration file is located in your home directory:
 
-``bash
-{$HOME}/.njuhalo
-``
+```bash
+$ {$HOME}/.njuhalo
+```
 
 There are two files, config.json and njuhalo.db. Config file is the one that is meant to be modified.
 
@@ -113,9 +113,9 @@ There are two files, config.json and njuhalo.db. Config file is the one that is 
 
 If there is no such file you can create it manually or just run:
 
-``bash
-/.njuhalo i
-``
+```bash
+$ /.njuhalo i
+```
 
 #### Slack configuration
 In order to configure slack notification you need to add token and channelId.
@@ -132,15 +132,15 @@ To get channel ID simply enter web version of Slack and select wanted channel. A
 ### Adding queries
 Adding queries can be pain in the ass so you can simply paste it like this 
 
-``
-/.njuhalo a http://www.njuskalo.hr/path?query=1&query=2
-``
+```bash
+$ /.njuhalo a http://www.njuskalo.hr/path?query=1&query=2
+```
 
 That will parse query and save it to the default config file which also can be found on path:
 
-``
-{$HOME}/.njuhalo
-``
+```bash
+$ {$HOME}/.njuhalo
+```
 
 Number of queries is not limited and you can add as much as you want.
 If you messed up something, you can always clear all queries with clean option.
@@ -149,15 +149,15 @@ If you messed up something, you can always clear all queries with clean option.
 
 Location of all njuhalo config and db is in your home folder
 
-``
-{$HOME}/.njuhalo
-``
+```bash
+$ {$HOME}/.njuhalo
+```
 
 To build binary from scratch:
 
-``
-go build
-``
+```bash
+$ go build
+```
 
 ---
 MIT License
