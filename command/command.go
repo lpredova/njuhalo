@@ -94,23 +94,29 @@ func StartMonitoring() {
 	}
 }
 
+// StartServer for listing results in browser
+func StartServer() {
+
+}
+
 func runParser() {
-	if len(conf.Queries) > 0 {
-		for _, query := range conf.Queries {
-			builder.SetMainLocation(query.BaseQueryPath)
-			builder.SetFilters(query.Filters)
-
-			doc := builder.GetDoc()
-			parseOffer(doc)
-
-			/*for {
-				if checkForMore(doc) {
-					parseOffer(doc)
-				}
-			}*/
-		}
-	} else {
+	if len(conf.Queries) <= 0 {
 		fmt.Println("There are no filters in your config, please check help")
+		return
+	}
+
+	for _, query := range conf.Queries {
+		builder.SetMainLocation(query.BaseQueryPath)
+		builder.SetFilters(query.Filters)
+
+		doc := builder.GetDoc()
+		parseOffer(doc)
+
+		for {
+			if checkForMore(doc) {
+				parseOffer(doc)
+			}
+		}
 	}
 }
 
@@ -167,9 +173,10 @@ func parseOffer(doc *goquery.Document) {
 func ClearQueries() {
 	if configuration.ClearQueries() {
 		fmt.Println("Queries cleared")
-	} else {
-		fmt.Println("Error clearing queries")
+		return
 	}
+
+	fmt.Println("Error clearing queries")
 }
 
 // SaveQuery method saves query url to config
