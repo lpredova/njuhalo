@@ -2,10 +2,12 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/lpredova/goquery"
 	"github.com/lpredova/njuhalo/builder"
+	"github.com/lpredova/njuhalo/db"
 	"github.com/lpredova/njuhalo/model"
 )
 
@@ -46,10 +48,9 @@ func GetListContent(doc *goquery.Document, selector string, offers []model.Offer
 	return offers
 }
 
-// CheckPagination method checks if there is pagination element on html
-func CheckPagination(doc *goquery.Document) bool {
+func checkPagination(doc *goquery.Document) bool {
 	hasPagination := false
-	doc.Find("div.entity-list-pagination").Each(func(i int, s *goquery.Selection) {
+	doc.Find("nav.Pagination").Each(func(i int, s *goquery.Selection) {
 		if strings.Contains(s.Find("a").Text(), "Sljedeća") {
 			hasPagination = true
 		}
@@ -57,3 +58,48 @@ func CheckPagination(doc *goquery.Document) bool {
 
 	return hasPagination
 }
+
+// ParseOffer parses one entity
+func ParseOffer(doc *goquery.Document) (bool, []model.Offer) {
+	var index int
+	var offer model.Offer
+	var offers []model.Offer
+	var finalOffers []model.Offer
+
+	offers = GetListContent(doc, ".EntityList--VauVau .EntityList-item article", offers)
+	offers = GetListContent(doc, ".EntityList--Standard .EntityList-item article", offers)
+
+	if len(offers) == 0 {
+		fmt.Println("No new offers found!")
+	}
+
+	for index, offer = range offers {
+		if !db.GetItem(offer.ID) {
+			finalOffers = append(finalOffers, offer)
+		}
+	}
+	fmt.Println(fmt.Sprintf("Parsed %d new results", index))
+
+	return db.InsertItem(finalOffers), finalOffers
+}
+
+// GetNextResultPage tries to determine if there are more pages?
+// if there are then get them and parse
+func GetNextResultPage(doc *goquery.Document, page int, filters map[string]string) (bool, int, map[string]string) {
+	if !checkPagination(doc) {
+		return false, 0, filters
+	}
+
+	page++
+	if filters == nil {
+		filters = make(map[string]string)
+	}
+
+	filters["page"] = strconv.Itoa(page)
+	return true, page, filters
+}
+
+// TODO
+// parsing kilometraža
+// parsing godište
+// parsing objavljen

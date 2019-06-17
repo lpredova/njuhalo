@@ -1,15 +1,14 @@
 package command
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"log"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -25,7 +24,6 @@ import (
 	"github.com/lpredova/njuhalo/parser"
 )
 
-var page = 0
 var doc *goquery.Document
 var conf model.Configuration
 var filters map[string]string
@@ -99,11 +97,54 @@ func Monitor() {
 func Serve() {
 	fmt.Println("Serving results: http://localhost:8080")
 
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/oops", errorHandler)
+	http.HandleFunc("/save-query", saveQueryHandler)
+	http.HandleFunc("/fetch-results", fetchResultsHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func errorHandler(w http.ResponseWriter, r *http.Request) {
+	template.Must(
+		template.New("").
+			ParseFiles("templates/error.tmpl"),
+	).ExecuteTemplate(w, "error.tmpl", nil)
+}
+func fetchResultsHandler(w http.ResponseWriter, r *http.Request) {
+	conf = configuration.ParseConfig()
+	err := runParser()
+	if err == nil {
+		http.Redirect(w, r, "/", 301)
+		return
+	}
+	http.Redirect(w, r, "/oops", 301)
+}
+
+func saveQueryHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Redirect(w, r, "/", 301)
+	}
+
+	r.ParseForm()
+
+	queryString := strings.Join(r.Form["query"], " ")
+	if queryString == "" {
+		http.Redirect(w, r, "/", 301)
+		return
+	}
+
+	err := SaveQuery(queryString)
+	if err == nil {
+		runParser()
+		http.Redirect(w, r, "/", 301)
+		return
+	}
+
+	fmt.Fprint(w, err.Error())
+	http.Redirect(w, r, "/", 301)
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
 	offers, err := db.GetItems()
 	if err != nil {
 		fmt.Println(err.Error())
@@ -124,10 +165,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	).ExecuteTemplate(w, "index.tmpl", data)
 }
 
-func runParser() {
+func runParser() error {
+	var page = 0
+	var hasMore = false
+
 	if len(conf.Queries) <= 0 {
-		fmt.Println("There are no filters in your config, please check help")
-		return
+		return errors.New("There are no filters in your config, please check help")
 	}
 
 	for _, query := range conf.Queries {
@@ -135,63 +178,29 @@ func runParser() {
 		builder.SetFilters(query.Filters)
 
 		doc := builder.GetDoc()
-		parseOffer(doc)
+		status, offer := parser.ParseOffer(doc)
+		if status {
+			alert.SendAlert(conf, offer)
+		}
 
-		for {
-			if checkForMore(doc) {
-				parseOffer(doc)
+		hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
+		for hasMore {
+			fmt.Println(fmt.Sprintf("Check page no: %d", page))
+			builder.SetFilters(filters)
+			doc = builder.GetDoc()
+
+			time.Sleep(time.Second * time.Duration(int(conf.SleepIntervalSec)))
+			status, offer := parser.ParseOffer(doc)
+			if status {
+				alert.SendAlert(conf, offer)
 			}
+
+			hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
 		}
-	}
-}
-
-// try to see if there are more pages?
-// if there are then get them and parse
-func checkForMore(doc *goquery.Document) bool {
-	if parser.CheckPagination(doc) {
-		page++
-		time.Sleep(time.Second * time.Duration(int(conf.SleepIntervalSec)))
-
-		if filters == nil {
-			filters = make(map[string]string)
-		}
-
-		filters["page"] = strconv.Itoa(page)
-		builder.SetFilters(filters)
-		builder.GetDoc()
-		return true
+		fmt.Println("DONE parsing results")
 	}
 
-	return false
-}
-
-func parseOffer(doc *goquery.Document) {
-	var offers []model.Offer
-	var finalOffers []model.Offer
-
-	offers = parser.GetListContent(doc, ".EntityList--VauVau .EntityList-item article", offers)
-	offers = parser.GetListContent(doc, ".EntityList--Standard .EntityList-item article", offers)
-
-	if len(offers) == 0 {
-		fmt.Println("No new offers found!")
-	}
-
-	for index, offer := range offers {
-		if !db.GetItem(offer.ID) {
-			finalOffers = append(finalOffers, offer)
-			fmt.Println(fmt.Sprintf("%d. %s - (%s) %s ", index, offer.Name, offer.Price, offer.URL))
-		}
-	}
-
-	if db.InsertItem(finalOffers) {
-		if conf.Slack {
-			alert.SendItemsToSlack(finalOffers)
-		}
-
-		if conf.Mail {
-			alert.SendItemsToMail(finalOffers)
-		}
-	}
+	return nil
 }
 
 // ClearQueries removes all queries from config
@@ -205,63 +214,49 @@ func ClearQueries() {
 }
 
 // SaveQuery method saves query url to config
-func SaveQuery(query string) {
-	if len(query) > 0 {
+func SaveQuery(query string) error {
+	if len(query) == 0 {
+		return errors.New("Please provide valid njuskalo.hr URL")
+	}
 
-		nj := randomString()
-		client := &http.Client{}
-		req, err := http.NewRequest("GET", query, nil)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", query, nil)
+	if err != nil {
+		return err
+	}
+
+	random := helper.RandomString()
+	req.Header.Set("User-Agent", random)
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 200 {
+		u, err := url.Parse(query)
 		if err != nil {
-			fmt.Println("Unable to create request")
+			return errors.New("Error parsing URL")
 		}
 
-		req.Header.Set("User-Agent", nj)
-		resp, err := client.Do(req)
-		if err != nil {
-			fmt.Println("Error checking URL")
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode == 200 {
-			u, err := url.Parse(query)
-			if err != nil {
-				fmt.Println("Error parsing URL")
+		if u.Host == "www.njuskalo.hr" {
+			parsed, _ := url.ParseQuery(u.RawQuery)
+			rawFilters := make(map[string]string)
+			for k, v := range parsed {
+				rawFilters[k] = strings.Join(v, "")
 			}
 
-			if u.Host == "www.njuskalo.hr" {
-				parsed, _ := url.ParseQuery(u.RawQuery)
-				rawFilters := make(map[string]string)
-				for k, v := range parsed {
-					rawFilters[k] = strings.Join(v, "")
-				}
-
-				query := model.Query{
-					BaseQueryPath: u.Path,
-					Filters:       rawFilters,
-				}
-
-				if configuration.AppendFilterToConfig(query) {
-					fmt.Println("URL added to filters")
-				} else {
-					fmt.Println("Error adding URL to filters")
-				}
-			} else {
-				fmt.Println("Given url is not from njuskalo")
+			query := model.Query{
+				BaseQueryPath: u.Path,
+				Filters:       rawFilters,
 			}
-		} else {
-			fmt.Println("This URL is not alive")
-		}
-	} else {
-		fmt.Println("Please provide valid njuskalo.hr URL")
-	}
-}
+			if configuration.AppendFilterToConfig(query) {
+				return nil
+			}
 
-func randomString() string {
-	n := rand.Intn(20)
-	b := make([]byte, n)
-	if _, err := rand.Read(b); err != nil {
-		panic(err)
+			return errors.New("Error adding URL to filters")
+		}
+		return errors.New("Given url is not from njuskalo")
 	}
-	s := fmt.Sprintf("%X", b)
-	return s
+	return errors.New("This URL is not alive")
 }
