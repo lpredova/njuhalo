@@ -2,6 +2,8 @@ package command
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -71,8 +73,8 @@ func Parse() {
 	runParser()
 }
 
-// StartMonitoring starts watcher that monitors items
-func StartMonitoring() {
+// Monitor starts watcher that monitors items
+func Monitor() {
 	conf = configuration.ParseConfig()
 	if conf.RunIntervalMin <= 0 {
 		fmt.Println("Please provide valid watcher run interval (larger than 0)")
@@ -92,23 +94,52 @@ func StartMonitoring() {
 	}()
 }
 
+// Serve for listing results in browser
+func Serve() {
+	fmt.Println("Serving results: http://localhost:8080")
+
+	http.HandleFunc("/", handler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	offers, err := db.GetItems()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	type viewData struct {
+		Offers *[]model.Offer
+	}
+
+	data := viewData{
+		Offers: offers,
+	}
+
+	template.Must(
+		template.New("").
+			ParseFiles("templates/index.tmpl"),
+	).ExecuteTemplate(w, "index.tmpl", data)
+}
+
 func runParser() {
-	if len(conf.Queries) > 0 {
-		for _, query := range conf.Queries {
-			builder.SetMainLocation(query.BaseQueryPath)
-			builder.SetFilters(query.Filters)
-
-			doc := builder.GetDoc()
-			parseOffer(doc)
-
-			/*for {
-				if checkForMore(doc) {
-					parseOffer(doc)
-				}
-			}*/
-		}
-	} else {
+	if len(conf.Queries) <= 0 {
 		fmt.Println("There are no filters in your config, please check help")
+		return
+	}
+
+	for _, query := range conf.Queries {
+		builder.SetMainLocation(query.BaseQueryPath)
+		builder.SetFilters(query.Filters)
+
+		doc := builder.GetDoc()
+		parseOffer(doc)
+
+		for {
+			if checkForMore(doc) {
+				parseOffer(doc)
+			}
+		}
 	}
 }
 
@@ -165,9 +196,10 @@ func parseOffer(doc *goquery.Document) {
 func ClearQueries() {
 	if configuration.ClearQueries() {
 		fmt.Println("Queries cleared")
-	} else {
-		fmt.Println("Error clearing queries")
+		return
 	}
+
+	fmt.Println("Error clearing queries")
 }
 
 // SaveQuery method saves query url to config

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <title>Njuhalo results</title>  
+        <style>
+            li {
+                display: block;
+            }
+            .hidden { display: none;}
+            #search {
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 30px;
+                position: fixed;
+                font-size: 20px;
+            }
+            .search-list {
+                margin-top: 60px;
+            }
+        </style>      
+    </head>
+    <body>
+        <input id="search" type="text" placeholder="Type to filter..." autofocus/>
+        <ul class="search-list">
+            {{range .Offers}}
+            <li>
+                <a href="{{.URL}}">{{.Name}}{{.Price}}</a>
+                </br>
+                <img src="{{.Image}}">
+                <p>{{.Description}}</p>
+                <hr>
+            </li>
+            {{end}}
+        </ul>
+    </body>
+    <script>
+    var input = document.querySelector('#search');
+    var items = document.querySelector('.search-list').getElementsByTagName('li');
+    input.addEventListener('keyup', function(ev) {
+        var text = ev.target.value
+        var pat = new RegExp(text, 'i')
+        for (var i=0; i < items.length; i++) {
+            var item = items[i]
+            if (pat.test(item.innerText)) {
+                item.className = '';
+                continue
+            }
+
+            item.className = 'hidden';
+        }
+    });
+    </script>
+</html>

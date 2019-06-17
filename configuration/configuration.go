@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/user"
 
 	"github.com/lpredova/njuhalo/model"
 )
@@ -13,8 +12,7 @@ const interval = 5
 const sleep = 3
 const configFile = "config.json"
 
-var usr, _ = user.Current()
-var path = usr.HomeDir + "/.njuhalo/" + configFile
+const path = "./storage/" + configFile
 
 // ParseConfig parsers currently available config file
 func ParseConfig() model.Configuration {
@@ -23,6 +21,7 @@ func ParseConfig() model.Configuration {
 	if err != nil {
 		return configuration
 	}
+
 	decoder := json.NewDecoder(file)
 	decoder.Decode(&configuration)
 	return configuration
