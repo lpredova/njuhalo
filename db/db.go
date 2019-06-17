@@ -47,7 +47,7 @@ func GetItems() (*[]model.Offer, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id,url,name,image,price,description FROM items ORDER BY id DESC;")
+	rows, err := db.Query("SELECT id, url, name, image, price, description, createdAt FROM items ORDER BY id DESC;")
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func GetItems() (*[]model.Offer, error) {
 	offers := []model.Offer{}
 	for rows.Next() {
 		offer := model.Offer{}
-		rows.Scan(&offer.ID, &offer.URL, &offer.Name, &offer.Image, &offer.Price, &offer.Description)
+		rows.Scan(&offer.ID, &offer.URL, &offer.Name, &offer.Image, &offer.Price, &offer.Description, &offer.CreatedAt)
 		offers = append(offers, offer)
 	}
 

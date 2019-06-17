@@ -8,4 +8,5 @@ type Offer struct {
 	Image       string
 	Price       string
 	Description string
+	CreatedAt   int64
 }
