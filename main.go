@@ -11,15 +11,15 @@ var app *cli.App
 
 func init() {
 	app = cli.NewApp()
-	app.Version = "1.0.2"
+	app.Version = "2.0.0"
 	app.Name = "njuhalo"
 	app.Author = "Lovro Predovan"
 	app.Email = "lovro.predovan[at]gmail.com"
-	app.Usage = "Watcher for Njuskalo.hr items"
+	app.Usage = "Watcher for Njuskalo.hr offers"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "config, con",
-			Value: "$HOME/.njuhalo/config.json",
+			Value: "storage/config.json",
 			Usage: "PATH to config file",
 		},
 	}

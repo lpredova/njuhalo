@@ -4,18 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"os/user"
 	"time"
 
 	"github.com/lpredova/njuhalo/model"
 	_ "github.com/mattn/go-sqlite3" // SQLlite db
 )
 
-const dbName = "./njuhalo.db"
-
-var usr, _ = user.Current()
-var homePath = usr.HomeDir + "/.njuhalo/"
-var dbPath = homePath + "njuhalo.db"
+const dbPath = "./storage/njuhalo.db"
 
 // InsertItem method inserts new offer into database
 func InsertItem(offers []model.Offer) bool {
@@ -94,14 +89,14 @@ func GetItem(itemID string) bool {
 // CreateDatabase creates sqllite db file in user home dir
 func CreateDatabase() bool {
 
-	err := os.MkdirAll(homePath, 0755)
+	err := os.MkdirAll("./storage", 0755)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
 	}
 
-	if _, err = os.Stat(homePath); os.IsNotExist(err) {
-		os.Mkdir(homePath, 0755)
+	if _, err = os.Stat("./storage"); os.IsNotExist(err) {
+		os.Mkdir("./storage", 0755)
 	}
 	if err != nil {
 		fmt.Println(err.Error())
