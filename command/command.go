@@ -4,19 +4,15 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/jasonlvhit/gocron"
 	"github.com/lpredova/goquery"
-	"github.com/lpredova/njuhalo/alert"
 	"github.com/lpredova/njuhalo/builder"
 	"github.com/lpredova/njuhalo/configuration"
 	"github.com/lpredova/njuhalo/db"
@@ -99,17 +95,24 @@ func Monitor() {
 func Serve() {
 	fmt.Println("Serving results: http://localhost:8080")
 
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/save-query", saveQueryHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method == "POST" {
-		r.ParseForm()
-		fmt.Println(r.Form["query"])
+func saveQueryHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		fmt.Println("Error")
+		http.Redirect(w, r, "/", 301)
 	}
 
+	r.ParseForm()
+	SaveQuery(r.Form["query"])
+
+	http.Redirect(w, r, "/", 301)
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
 	offers, err := db.GetItems()
 	if err != nil {
 		fmt.Println(err.Error())
@@ -141,61 +144,12 @@ func runParser() {
 		builder.SetFilters(query.Filters)
 
 		doc := builder.GetDoc()
-		parseOffer(doc)
+		parser.ParseOffer(doc)
 
 		for {
-			if checkForMore(doc) {
-				parseOffer(doc)
+			if parser.CheckForMore(doc) {
+				parser.ParseOffer(doc)
 			}
-		}
-	}
-}
-
-// try to see if there are more pages?
-// if there are then get them and parse
-func checkForMore(doc *goquery.Document) bool {
-	if parser.CheckPagination(doc) {
-		page++
-		time.Sleep(time.Second * time.Duration(int(conf.SleepIntervalSec)))
-
-		if filters == nil {
-			filters = make(map[string]string)
-		}
-
-		filters["page"] = strconv.Itoa(page)
-		builder.SetFilters(filters)
-		builder.GetDoc()
-		return true
-	}
-
-	return false
-}
-
-func parseOffer(doc *goquery.Document) {
-	var offers []model.Offer
-	var finalOffers []model.Offer
-
-	offers = parser.GetListContent(doc, ".EntityList--VauVau .EntityList-item article", offers)
-	offers = parser.GetListContent(doc, ".EntityList--Standard .EntityList-item article", offers)
-
-	if len(offers) == 0 {
-		fmt.Println("No new offers found!")
-	}
-
-	for index, offer := range offers {
-		if !db.GetItem(offer.ID) {
-			finalOffers = append(finalOffers, offer)
-			fmt.Println(fmt.Sprintf("%d. %s - (%s) %s ", index, offer.Name, offer.Price, offer.URL))
-		}
-	}
-
-	if db.InsertItem(finalOffers) {
-		if conf.Slack {
-			alert.SendItemsToSlack(finalOffers)
-		}
-
-		if conf.Mail {
-			alert.SendItemsToMail(finalOffers)
 		}
 	}
 }
@@ -212,61 +166,51 @@ func ClearQueries() {
 
 // SaveQuery method saves query url to config
 func SaveQuery(query string) {
-	if len(query) > 0 {
+	if len(query) == 0 {
+		fmt.Println("Please provide valid njuskalo.hr URL")
+		return
+	}
 
-		client := &http.Client{}
-		req, err := http.NewRequest("GET", query, nil)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", query, nil)
+	if err != nil {
+		fmt.Println("Unable to create request")
+	}
+
+	req.Header.Set("User-Agent", helper.RandomString())
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error checking URL")
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 200 {
+		u, err := url.Parse(query)
 		if err != nil {
-			fmt.Println("Unable to create request")
+			fmt.Println("Error parsing URL")
 		}
 
-		req.Header.Set("User-Agent", randomString())
-		resp, err := client.Do(req)
-		if err != nil {
-			fmt.Println("Error checking URL")
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode == 200 {
-			u, err := url.Parse(query)
-			if err != nil {
-				fmt.Println("Error parsing URL")
+		if u.Host == "www.njuskalo.hr" {
+			parsed, _ := url.ParseQuery(u.RawQuery)
+			rawFilters := make(map[string]string)
+			for k, v := range parsed {
+				rawFilters[k] = strings.Join(v, "")
 			}
 
-			if u.Host == "www.njuskalo.hr" {
-				parsed, _ := url.ParseQuery(u.RawQuery)
-				rawFilters := make(map[string]string)
-				for k, v := range parsed {
-					rawFilters[k] = strings.Join(v, "")
-				}
+			query := model.Query{
+				BaseQueryPath: u.Path,
+				Filters:       rawFilters,
+			}
 
-				query := model.Query{
-					BaseQueryPath: u.Path,
-					Filters:       rawFilters,
-				}
-
-				if configuration.AppendFilterToConfig(query) {
-					fmt.Println("URL added to filters")
-				} else {
-					fmt.Println("Error adding URL to filters")
-				}
+			if configuration.AppendFilterToConfig(query) {
+				fmt.Println("URL added to filters")
 			} else {
-				fmt.Println("Given url is not from njuskalo")
+				fmt.Println("Error adding URL to filters")
 			}
 		} else {
-			fmt.Println("This URL is not alive")
+			fmt.Println("Given url is not from njuskalo")
 		}
 	} else {
-		fmt.Println("Please provide valid njuskalo.hr URL")
+		fmt.Println("This URL is not alive")
 	}
-}
-
-func randomString() string {
-	n := rand.Intn(20)
-	b := make([]byte, n)
-	if _, err := rand.Read(b); err != nil {
-		panic(err)
-	}
-	s := fmt.Sprintf("%X", b)
-	return s
 }

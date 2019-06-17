@@ -2,11 +2,16 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/lpredova/goquery"
+	"github.com/lpredova/njuhalo/alert"
 	"github.com/lpredova/njuhalo/builder"
+	"github.com/lpredova/njuhalo/db"
 	"github.com/lpredova/njuhalo/model"
+	"github.com/lpredova/njuhalo/parser"
 )
 
 // GetListContent method gets items for sale and parses them
@@ -56,4 +61,54 @@ func CheckPagination(doc *goquery.Document) bool {
 	})
 
 	return hasPagination
+}
+
+// ParseOffer parses one entity
+func ParseOffer(doc *goquery.Document) {
+	var offers []model.Offer
+	var finalOffers []model.Offer
+
+	offers = parser.GetListContent(doc, ".EntityList--VauVau .EntityList-item article", offers)
+	offers = parser.GetListContent(doc, ".EntityList--Standard .EntityList-item article", offers)
+
+	if len(offers) == 0 {
+		fmt.Println("No new offers found!")
+	}
+
+	for index, offer := range offers {
+		if !db.GetItem(offer.ID) {
+			finalOffers = append(finalOffers, offer)
+			fmt.Println(fmt.Sprintf("%d. %s - (%s) %s ", index, offer.Name, offer.Price, offer.URL))
+		}
+	}
+
+	if db.InsertItem(finalOffers) {
+		if conf.Slack {
+			alert.SendItemsToSlack(finalOffers)
+		}
+
+		if conf.Mail {
+			alert.SendItemsToMail(finalOffers)
+		}
+	}
+}
+
+// CheckForMore tries to determine if there are more pages?
+// if there are then get them and parse
+func CheckForMore(doc *goquery.Document) bool {
+	if !parser.CheckPagination(doc) {
+		return false
+	}
+
+	page++
+	time.Sleep(time.Second * time.Duration(int(conf.SleepIntervalSec)))
+
+	if filters == nil {
+		filters = make(map[string]string)
+	}
+
+	filters["page"] = strconv.Itoa(page)
+	builder.SetFilters(filters)
+	builder.GetDoc()
+	return true
 }
