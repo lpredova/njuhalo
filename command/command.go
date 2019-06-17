@@ -1,6 +1,7 @@
 package command
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"log"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/jasonlvhit/gocron"
 	"github.com/lpredova/goquery"
+	"github.com/lpredova/njuhalo/alert"
 	"github.com/lpredova/njuhalo/builder"
 	"github.com/lpredova/njuhalo/configuration"
 	"github.com/lpredova/njuhalo/db"
@@ -21,7 +23,6 @@ import (
 	"github.com/lpredova/njuhalo/parser"
 )
 
-var page = 0
 var doc *goquery.Document
 var conf model.Configuration
 var filters map[string]string
@@ -107,7 +108,21 @@ func saveQueryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	r.ParseForm()
-	SaveQuery(r.Form["query"])
+
+	queryString := strings.Join(r.Form["query"], " ")
+	if queryString == "" {
+		http.Redirect(w, r, "/", 301)
+		return
+	}
+
+	err := SaveQuery(queryString)
+	if err == nil {
+		http.Redirect(w, r, "/", 301)
+		return
+	}
+
+	fmt.Fprint(w, "Redirecting...")
+	fmt.Fprint(w, err.Error())
 
 	http.Redirect(w, r, "/", 301)
 }
@@ -134,6 +149,9 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func runParser() {
+	var page = 0
+	var hasMore = false
+
 	if len(conf.Queries) <= 0 {
 		fmt.Println("There are no filters in your config, please check help")
 		return
@@ -144,11 +162,19 @@ func runParser() {
 		builder.SetFilters(query.Filters)
 
 		doc := builder.GetDoc()
-		parser.ParseOffer(doc)
+		status, offer := parser.ParseOffer(doc)
+		if status {
+			alert.SendAlert(conf, offer)
+		}
 
 		for {
-			if parser.CheckForMore(doc) {
-				parser.ParseOffer(doc)
+			hasMore, page = parser.CheckForMore(doc, page, filters, conf)
+
+			if hasMore {
+				status, offer := parser.ParseOffer(doc)
+				if status {
+					alert.SendAlert(conf, offer)
+				}
 			}
 		}
 	}
@@ -165,29 +191,28 @@ func ClearQueries() {
 }
 
 // SaveQuery method saves query url to config
-func SaveQuery(query string) {
+func SaveQuery(query string) error {
 	if len(query) == 0 {
-		fmt.Println("Please provide valid njuskalo.hr URL")
-		return
+		return errors.New("Please provide valid njuskalo.hr URL")
 	}
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", query, nil)
 	if err != nil {
-		fmt.Println("Unable to create request")
+		return errors.New("Unable to create request")
 	}
 
 	req.Header.Set("User-Agent", helper.RandomString())
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error checking URL")
+		return errors.New("Error checking URL")
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == 200 {
 		u, err := url.Parse(query)
 		if err != nil {
-			fmt.Println("Error parsing URL")
+			return errors.New("Error parsing URL")
 		}
 
 		if u.Host == "www.njuskalo.hr" {
@@ -203,14 +228,12 @@ func SaveQuery(query string) {
 			}
 
 			if configuration.AppendFilterToConfig(query) {
-				fmt.Println("URL added to filters")
-			} else {
-				fmt.Println("Error adding URL to filters")
+				return nil
 			}
-		} else {
-			fmt.Println("Given url is not from njuskalo")
+
+			return errors.New("Error adding URL to filters")
 		}
-	} else {
-		fmt.Println("This URL is not alive")
+		return errors.New("Given url is not from njuskalo")
 	}
+	return errors.New("This URL is not alive")
 }
