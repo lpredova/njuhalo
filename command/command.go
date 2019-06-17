@@ -104,6 +104,12 @@ func Serve() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == "POST" {
+		r.ParseForm()
+		fmt.Println(r.Form["query"])
+	}
+
 	offers, err := db.GetItems()
 	if err != nil {
 		fmt.Println(err.Error())
@@ -208,14 +214,13 @@ func ClearQueries() {
 func SaveQuery(query string) {
 	if len(query) > 0 {
 
-		nj := randomString()
 		client := &http.Client{}
 		req, err := http.NewRequest("GET", query, nil)
 		if err != nil {
 			fmt.Println("Unable to create request")
 		}
 
-		req.Header.Set("User-Agent", nj)
+		req.Header.Set("User-Agent", randomString())
 		resp, err := client.Do(req)
 		if err != nil {
 			fmt.Println("Error checking URL")
