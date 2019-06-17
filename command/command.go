@@ -74,24 +74,22 @@ func Parse() {
 // StartMonitoring starts watcher that monitors items
 func StartMonitoring() {
 	conf = configuration.ParseConfig()
-	if conf.RunIntervalMin > 0 {
-
-		runParser()
-
-		gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(runParser)
-		<-gocron.Start()
-
-		c := make(chan os.Signal, 2)
-		signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-		go func() {
-			<-c
-			gocron.Clear()
-			os.Exit(1)
-		}()
-
-	} else {
+	if conf.RunIntervalMin <= 0 {
 		fmt.Println("Please provide valid watcher run interval (larger than 0)")
+		return
 	}
+
+	runParser()
+	gocron.Every(uint64(conf.RunIntervalMin)).Minutes().Do(runParser)
+	<-gocron.Start()
+
+	c := make(chan os.Signal, 2)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		gocron.Clear()
+		os.Exit(1)
+	}()
 }
 
 // StartServer for listing results in browser
