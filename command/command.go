@@ -2,6 +2,8 @@ package command
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -71,8 +73,8 @@ func Parse() {
 	runParser()
 }
 
-// StartMonitoring starts watcher that monitors items
-func StartMonitoring() {
+// Monitor starts watcher that monitors items
+func Monitor() {
 	conf = configuration.ParseConfig()
 	if conf.RunIntervalMin <= 0 {
 		fmt.Println("Please provide valid watcher run interval (larger than 0)")
@@ -92,9 +94,32 @@ func StartMonitoring() {
 	}()
 }
 
-// StartServer for listing results in browser
-func StartServer() {
+// Serve for listing results in browser
+func Serve() {
+	fmt.Println("Serving results: http://localhost:8080")
 
+	http.HandleFunc("/", handler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	offers, err := db.GetItems()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	type viewData struct {
+		Offers *[]model.Offer
+	}
+
+	data := viewData{
+		Offers: offers,
+	}
+
+	template.Must(
+		template.New("").
+			ParseFiles("templates/index.tmpl"),
+	).ExecuteTemplate(w, "index.tmpl", data)
 }
 
 func runParser() {

@@ -34,11 +34,20 @@ func init() {
 			},
 		},
 		{
-			Name:    "start, serve",
+			Name:    "monitor",
+			Aliases: []string{"m"},
+			Usage:   "start monitoring njuskalo for items",
+			Action: func(c *cli.Context) error {
+				command.Monitor()
+				return nil
+			},
+		},
+		{
+			Name:    "serve",
 			Aliases: []string{"s"},
 			Usage:   "start monitoring njuskalo for items",
 			Action: func(c *cli.Context) error {
-				command.StartMonitoring()
+				command.Serve()
 				return nil
 			},
 		},
