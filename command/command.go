@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/jasonlvhit/gocron"
 	"github.com/lpredova/goquery"
@@ -166,16 +167,21 @@ func runParser() {
 			alert.SendAlert(conf, offer)
 		}
 
-		for {
-			hasMore, page = parser.CheckForMore(doc, page, filters, conf)
+		hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
+		for hasMore {
+			fmt.Println(fmt.Sprintf("Check page no: %d", page))
+			builder.SetFilters(filters)
+			doc = builder.GetDoc()
 
-			if hasMore {
-				status, offer := parser.ParseOffer(doc)
-				if status {
-					alert.SendAlert(conf, offer)
-				}
+			time.Sleep(time.Second * time.Duration(int(conf.SleepIntervalSec)))
+			status, offer := parser.ParseOffer(doc)
+			if status {
+				alert.SendAlert(conf, offer)
 			}
+
+			hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
 		}
+		fmt.Println("DONE")
 	}
 }
 

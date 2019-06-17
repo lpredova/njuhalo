@@ -29,13 +29,14 @@
         </form>
         <hr>
         <input id="search" type="text" placeholder="Type to filter..." autofocus/>
-        <h1>Dashboard</h1>        
+        <h1>Dashboard</h1>
+        <p>Total: {{ len .Offers }}</p>
         <ul class="search-list">
             {{range .Offers}}
             <li>
-                <a href="{{.URL}}">{{.Name}}</a>
+                <a href="{{.URL}}" target="_blank">{{.Name}}</a>
                 </br>
-                <a href="{{.URL}}"><img src="{{.Image}}"></a>
+                <a href="{{.URL}}" target="_blank"><img src="{{.Image}}"></a>
                 <p><b>{{.Price}}</b>&nbsp;{{.Description}}</p>
                 <span>{{ ts2date .CreatedAt }}</span>
                 <hr>

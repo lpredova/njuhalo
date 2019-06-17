@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/lpredova/goquery"
 	"github.com/lpredova/njuhalo/builder"
@@ -51,7 +50,7 @@ func GetListContent(doc *goquery.Document, selector string, offers []model.Offer
 
 func checkPagination(doc *goquery.Document) bool {
 	hasPagination := false
-	doc.Find("div.entity-list-pagination").Each(func(i int, s *goquery.Selection) {
+	doc.Find("nav.Pagination").Each(func(i int, s *goquery.Selection) {
 		if strings.Contains(s.Find("a").Text(), "Sljedeća") {
 			hasPagination = true
 		}
@@ -62,6 +61,8 @@ func checkPagination(doc *goquery.Document) bool {
 
 // ParseOffer parses one entity
 func ParseOffer(doc *goquery.Document) (bool, []model.Offer) {
+	var index int
+	var offer model.Offer
 	var offers []model.Offer
 	var finalOffers []model.Offer
 
@@ -72,32 +73,28 @@ func ParseOffer(doc *goquery.Document) (bool, []model.Offer) {
 		fmt.Println("No new offers found!")
 	}
 
-	for index, offer := range offers {
+	for index, offer = range offers {
 		if !db.GetItem(offer.ID) {
 			finalOffers = append(finalOffers, offer)
-			fmt.Println(fmt.Sprintf("%d. %s - (%s) %s ", index, offer.Name, offer.Price, offer.URL))
 		}
 	}
+	fmt.Println(fmt.Sprintf("Parsed %d new results", index))
 
 	return db.InsertItem(finalOffers), finalOffers
 }
 
-// CheckForMore tries to determine if there are more pages?
+// GetNextResultPage tries to determine if there are more pages?
 // if there are then get them and parse
-func CheckForMore(doc *goquery.Document, page int, filters map[string]string, conf model.Configuration) (bool, int) {
+func GetNextResultPage(doc *goquery.Document, page int, filters map[string]string) (bool, int, map[string]string) {
 	if !checkPagination(doc) {
-		return false, 0
+		return false, 0, filters
 	}
 
 	page++
-	time.Sleep(time.Second * time.Duration(int(conf.SleepIntervalSec)))
-
 	if filters == nil {
 		filters = make(map[string]string)
 	}
 
 	filters["page"] = strconv.Itoa(page)
-	builder.SetFilters(filters)
-	builder.GetDoc()
-	return true, page
+	return true, page, filters
 }
