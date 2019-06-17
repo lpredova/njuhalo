@@ -27,10 +27,10 @@
         <ul class="search-list">
             {{range .Offers}}
             <li>
-                <a href="{{.URL}}">{{.Name}}{{.Price}}</a>
+                <a href="{{.URL}}">{{.Name}}</a>
                 </br>
-                <img src="{{.Image}}">
-                <p>{{.Description}}</p>
+                <a href="{{.URL}}"><img src="{{.Image}}"></a>
+                <p><b>{{.Price}}</b>&nbsp;{{.Description}}</p>
                 <span>{{ ts2date .CreatedAt }}</span>
                 <hr>
             </li>
