@@ -20,6 +20,7 @@ import (
 	"github.com/lpredova/njuhalo/builder"
 	"github.com/lpredova/njuhalo/configuration"
 	"github.com/lpredova/njuhalo/db"
+	"github.com/lpredova/njuhalo/helper"
 	"github.com/lpredova/njuhalo/model"
 	"github.com/lpredova/njuhalo/parser"
 )
@@ -118,6 +119,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	template.Must(
 		template.New("").
+			Funcs(template.FuncMap{"ts2date": helper.TimestampToDate}).
 			ParseFiles("templates/index.tmpl"),
 	).ExecuteTemplate(w, "index.tmpl", data)
 }
