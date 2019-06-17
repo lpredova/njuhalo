@@ -98,3 +98,8 @@ func GetNextResultPage(doc *goquery.Document, page int, filters map[string]strin
 	filters["page"] = strconv.Itoa(page)
 	return true, page, filters
 }
+
+// TODO
+// parsing kilometraža
+// parsing godište
+// parsing objavljen

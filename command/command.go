@@ -98,13 +98,30 @@ func Serve() {
 	fmt.Println("Serving results: http://localhost:8080")
 
 	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/oops", errorHandler)
 	http.HandleFunc("/save-query", saveQueryHandler)
+	http.HandleFunc("/fetch-results", fetchResultsHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func errorHandler(w http.ResponseWriter, r *http.Request) {
+	template.Must(
+		template.New("").
+			ParseFiles("templates/error.tmpl"),
+	).ExecuteTemplate(w, "error.tmpl", nil)
+}
+func fetchResultsHandler(w http.ResponseWriter, r *http.Request) {
+	conf = configuration.ParseConfig()
+	err := runParser()
+	if err == nil {
+		http.Redirect(w, r, "/", 301)
+		return
+	}
+	http.Redirect(w, r, "/oops", 301)
 }
 
 func saveQueryHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
-		fmt.Println("Error")
 		http.Redirect(w, r, "/", 301)
 	}
 
@@ -148,13 +165,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	).ExecuteTemplate(w, "index.tmpl", data)
 }
 
-func runParser() {
+func runParser() error {
 	var page = 0
 	var hasMore = false
 
 	if len(conf.Queries) <= 0 {
-		fmt.Println("There are no filters in your config, please check help")
-		return
+		return errors.New("There are no filters in your config, please check help")
 	}
 
 	for _, query := range conf.Queries {
@@ -181,8 +197,10 @@ func runParser() {
 
 			hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
 		}
-		fmt.Println("DONE")
+		fmt.Println("DONE parsing results")
 	}
+
+	return nil
 }
 
 // ClearQueries removes all queries from config
