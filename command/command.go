@@ -117,13 +117,12 @@ func saveQueryHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := SaveQuery(queryString)
 	if err == nil {
+		runParser()
 		http.Redirect(w, r, "/", 301)
 		return
 	}
 
-	fmt.Fprint(w, "Redirecting...")
 	fmt.Fprint(w, err.Error())
-
 	http.Redirect(w, r, "/", 301)
 }
 
@@ -199,13 +198,14 @@ func SaveQuery(query string) error {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", query, nil)
 	if err != nil {
-		return errors.New("Unable to create request")
+		return err
 	}
 
-	req.Header.Set("User-Agent", helper.RandomString())
+	random := helper.RandomString()
+	req.Header.Set("User-Agent", random)
 	resp, err := client.Do(req)
 	if err != nil {
-		return errors.New("Error checking URL")
+		return err
 	}
 	defer resp.Body.Close()
 
@@ -226,7 +226,6 @@ func SaveQuery(query string) error {
 				BaseQueryPath: u.Path,
 				Filters:       rawFilters,
 			}
-
 			if configuration.AppendFilterToConfig(query) {
 				return nil
 			}
