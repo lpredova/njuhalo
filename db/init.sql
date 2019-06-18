@@ -6,6 +6,10 @@ CREATE TABLE items (
   image text,
   price text,
   description text,
+  location text,
+  year text,
+  mileage text,
+  published text,
   createdAt integer
 );
 

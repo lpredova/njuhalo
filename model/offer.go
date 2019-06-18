@@ -8,5 +8,9 @@ type Offer struct {
 	Image       string
 	Price       string
 	Description string
+	Location    string
+	Year        string
+	Mileage     string
+	Published   string
 	CreatedAt   int64
 }

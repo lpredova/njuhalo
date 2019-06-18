@@ -41,7 +41,11 @@
                 </br>
                 <a href="{{.URL}}" target="_blank"><img src="{{.Image}}"></a>
                 <p><b>{{.Price}}</b>&nbsp;{{.Description}}</p>
-                <span>{{ ts2date .CreatedAt }}</span>
+                <p>Lokacija: {{.Location}}</p>
+                <p>Kilometraža: {{.Mileage}}km</p>
+                <p>Godina: {{.Year}}</p>
+                <p>{{.Published}}</p>
+                <span>Analiziran: {{ ts2date .CreatedAt }}</span>
                 <hr>
             </li>
             {{end}}
