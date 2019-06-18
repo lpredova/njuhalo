@@ -45,8 +45,9 @@ func SetFilters(filters map[string]string) {
 func GetDoc() *goquery.Document {
 	url := BaseURL + pathURL + queryURL
 	doc, err := goquery.NewDocument(url)
+	fmt.Println(fmt.Sprintf("Fetch results for: %s", url))
 	if err != nil {
-		panic("Cannot get doc")
+		panic(err.Error())
 	}
 
 	return doc

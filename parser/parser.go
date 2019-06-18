@@ -8,6 +8,7 @@ import (
 	"github.com/lpredova/goquery"
 	"github.com/lpredova/njuhalo/builder"
 	"github.com/lpredova/njuhalo/db"
+	"github.com/lpredova/njuhalo/helper"
 	"github.com/lpredova/njuhalo/model"
 )
 
@@ -30,19 +31,28 @@ func GetListContent(doc *goquery.Document, selector string, offers []model.Offer
 		priceElement := s.Find(".entity-prices .price-item .price--eur")
 		price := priceElement.Text()
 
+		publishedElement := s.Find(".entity-pub-date")
+		published := publishedElement.Text()
+
 		descriptionElement := s.Find(".entity-description-main")
 		description := descriptionElement.Text()
-
-		if len(itemID) > 0 {
-			offers = append(offers, model.Offer{
-				ID:          itemID,
-				URL:         itemLink,
-				Name:        itemTitle,
-				Image:       image,
-				Price:       price,
-				Description: description,
-			})
+		if len(itemID) == 0 {
+			return
 		}
+		f := strings.Fields(description)
+
+		offers = append(offers, model.Offer{
+			ID:          itemID,
+			URL:         itemLink,
+			Name:        itemTitle,
+			Image:       image,
+			Price:       price,
+			Year:        helper.GetNumber(helper.GetSliceData(f, 5)),
+			Location:    f[len(f)-1],
+			Mileage:     helper.GetNumber(helper.GetSliceData(f, 2)),
+			Published:   published,
+			Description: description,
+		})
 	})
 
 	return offers
@@ -98,8 +108,3 @@ func GetNextResultPage(doc *goquery.Document, page int, filters map[string]strin
 	filters["page"] = strconv.Itoa(page)
 	return true, page, filters
 }
-
-// TODO
-// parsing kilometraža
-// parsing godište
-// parsing objavljen

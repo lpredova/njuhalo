@@ -3,6 +3,7 @@ package helper
 import (
 	"fmt"
 	"math/rand"
+	"regexp"
 	"time"
 )
 
@@ -23,4 +24,24 @@ func RandomString() string {
 	}
 	s := fmt.Sprintf("%X", b)
 	return s
+}
+
+// GetSliceData returns data specified by index if exists
+func GetSliceData(slice []string, index int) string {
+	if len(slice) > (index + 1) {
+		return slice[index]
+	}
+
+	return ""
+}
+
+// GetNumber returns numeric value from strong if there is any
+func GetNumber(input string) string {
+	re := regexp.MustCompile("[0-9]+")
+	result := re.FindAllString(input, -1)
+	if len(result) > 0 {
+		return result[0]
+	}
+
+	return ""
 }

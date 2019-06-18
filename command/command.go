@@ -185,7 +185,6 @@ func runParser() error {
 
 		hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
 		for hasMore {
-			fmt.Println(fmt.Sprintf("Check page no: %d", page))
 			builder.SetFilters(filters)
 			doc = builder.GetDoc()
 

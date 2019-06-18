@@ -21,14 +21,14 @@ func InsertItem(offers []model.Offer) bool {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("INSERT INTO items(itemID, url, name, image, price, description, createdAt) values(?,?,?,?,?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO items(itemID, url, name, image, price, description, location, year, mileage, published, createdAt) values(?,?,?,?,?,?,?,?,?,?,?)")
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
 	}
 
 	for _, offer := range offers {
-		_, err := stmt.Exec(offer.ID, offer.URL, offer.Name, offer.Image, offer.Price, offer.Description, int32(time.Now().Unix()))
+		_, err := stmt.Exec(offer.ID, offer.URL, offer.Name, offer.Image, offer.Price, offer.Description, offer.Location, offer.Year, offer.Mileage, offer.Published, int32(time.Now().Unix()))
 		if err != nil {
 			fmt.Println(err.Error())
 			return false
@@ -47,7 +47,7 @@ func GetItems() (*[]model.Offer, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id, url, name, image, price, description, createdAt FROM items ORDER BY id DESC;")
+	rows, err := db.Query("SELECT id, url, name, image, price, description, location, year, mileage, published, createdAt FROM items ORDER BY id DESC;")
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func GetItems() (*[]model.Offer, error) {
 	offers := []model.Offer{}
 	for rows.Next() {
 		offer := model.Offer{}
-		rows.Scan(&offer.ID, &offer.URL, &offer.Name, &offer.Image, &offer.Price, &offer.Description, &offer.CreatedAt)
+		rows.Scan(&offer.ID, &offer.URL, &offer.Name, &offer.Image, &offer.Price, &offer.Description, &offer.Location, &offer.Year, &offer.Mileage, &offer.Published, &offer.CreatedAt)
 		offers = append(offers, offer)
 	}
 
