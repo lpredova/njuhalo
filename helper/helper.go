@@ -26,11 +26,6 @@ func RandomString() string {
 	return s
 }
 
-// Split splits some input by :
-func Split(r rune) bool {
-	return r == ':'
-}
-
 // GetSliceData returns data specified by index if exists
 func GetSliceData(slice []string, index int) string {
 	if len(slice) > (index + 1) {

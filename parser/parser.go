@@ -36,12 +36,10 @@ func GetListContent(doc *goquery.Document, selector string, offers []model.Offer
 
 		descriptionElement := s.Find(".entity-description-main")
 		description := descriptionElement.Text()
-
-		offerDescription := strings.FieldsFunc(description, helper.Split)
-
 		if len(itemID) == 0 {
 			return
 		}
+		f := strings.Fields(description)
 
 		offers = append(offers, model.Offer{
 			ID:          itemID,
@@ -49,9 +47,9 @@ func GetListContent(doc *goquery.Document, selector string, offers []model.Offer
 			Name:        itemTitle,
 			Image:       image,
 			Price:       price,
-			Year:        helper.GetNumber(helper.GetSliceData(offerDescription, 1)),
-			Location:    helper.GetSliceData(offerDescription, 2),
-			Mileage:     helper.GetNumber(helper.GetSliceData(offerDescription, 0)),
+			Year:        helper.GetNumber(helper.GetSliceData(f, 5)),
+			Location:    f[len(f)-1],
+			Mileage:     helper.GetNumber(helper.GetSliceData(f, 2)),
 			Published:   published,
 			Description: description,
 		})
