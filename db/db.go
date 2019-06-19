@@ -27,14 +27,14 @@ func InsertItem(offers []model.Offer) bool {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("INSERT INTO items(itemID, url, name, image, price, description, location, year, mileage, published, createdAt) values(?,?,?,?,?,?,?,?,?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO items(queryID, itemID, url, name, image, price, description, location, year, mileage, published, createdAt) values(?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
 	}
 
 	for _, offer := range offers {
-		_, err := stmt.Exec(offer.ID, offer.URL, offer.Name, offer.Image, offer.Price, offer.Description, offer.Location, offer.Year, offer.Mileage, offer.Published, int32(time.Now().Unix()))
+		_, err := stmt.Exec(offer.QueryID, offer.ItemID, offer.URL, offer.Name, offer.Image, offer.Price, offer.Description, offer.Location, offer.Year, offer.Mileage, offer.Published, int32(time.Now().Unix()))
 		if err != nil {
 			fmt.Println(err.Error())
 			return false
@@ -70,7 +70,7 @@ func GetItems() (*[]model.Offer, error) {
 }
 
 // GetItem method that checks if there is alreay offer with that ID
-func GetItem(itemID string) bool {
+func GetItem(itemID int64) bool {
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -78,7 +78,7 @@ func GetItem(itemID string) bool {
 	}
 	defer db.Close()
 
-	rows, err := db.Query(fmt.Sprintf("SELECT * FROM items where itemID = %s", itemID))
+	rows, err := db.Query(fmt.Sprintf("SELECT * FROM items where itemID = %d", itemID))
 	if err != nil {
 		fmt.Println(err.Error())
 		return false

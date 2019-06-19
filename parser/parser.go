@@ -33,7 +33,7 @@ func Run() error {
 		builder.SetFilters(filters)
 
 		doc := builder.GetDoc()
-		parseOffer(doc)
+		parseOffer(doc, query.ID)
 		/*
 			if status {
 				alert.SendAlert(conf, offer)
@@ -46,7 +46,7 @@ func Run() error {
 			doc = builder.GetDoc()
 
 			time.Sleep(time.Second * time.Duration(int(1)))
-			parseOffer(doc)
+			parseOffer(doc, query.ID)
 			/*
 				if status {
 					alert.SendAlert(conf, offer)
@@ -61,7 +61,7 @@ func Run() error {
 	return nil
 }
 
-func parseOffer(doc *goquery.Document) (bool, []model.Offer) {
+func parseOffer(doc *goquery.Document, queryID int64) (bool, []model.Offer) {
 	var index int
 	var offer model.Offer
 	var offers []model.Offer
@@ -71,15 +71,17 @@ func parseOffer(doc *goquery.Document) (bool, []model.Offer) {
 	offers = GetListContent(doc, ".EntityList--Standard .EntityList-item article", offers)
 
 	if len(offers) == 0 {
-		fmt.Println("No new offers found!")
+		fmt.Println("No offers found!")
+		return false, nil
 	}
 
 	for index, offer = range offers {
 		if !db.GetItem(offer.ID) {
+			offer.QueryID = queryID
 			finalOffers = append(finalOffers, offer)
 		}
 	}
-	fmt.Println(fmt.Sprintf("Parsed %d new results", index))
+	fmt.Println(fmt.Sprintf("Parsed %d results", index))
 
 	return db.InsertItem(finalOffers), finalOffers
 }
@@ -130,7 +132,7 @@ func GetListContent(doc *goquery.Document, selector string, offers []model.Offer
 		f := strings.Fields(description)
 
 		offers = append(offers, model.Offer{
-			ID:          itemID,
+			ItemID:      itemID,
 			URL:         itemLink,
 			Name:        itemTitle,
 			Image:       image,

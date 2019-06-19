@@ -36,7 +36,7 @@ func init() {
 		{
 			Name:    "monitor",
 			Aliases: []string{"m"},
-			Usage:   "start monitoring njuskalo for items",
+			Usage:   "Start monitoring njuskalo for items",
 			Action: func(c *cli.Context) error {
 				command.Monitor()
 				return nil
@@ -45,7 +45,7 @@ func init() {
 		{
 			Name:    "serve",
 			Aliases: []string{"s"},
-			Usage:   "start monitoring njuskalo for items",
+			Usage:   "Start local server",
 			Action: func(c *cli.Context) error {
 				command.Serve()
 				return nil
