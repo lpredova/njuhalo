@@ -86,6 +86,51 @@ func GetItem(itemID string) bool {
 	return false
 }
 
+// InsertQuery saves new query
+func InsertQuery(query model.Query) error {
+	db, err := sql.Open("sqlite3", dbPath)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare("INSERT INTO queries(name, isActive, url, filters, createdAt) values(?,?,?,?,?)")
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(query.Name, "Y", query.URL, query.Filters, int32(time.Now().Unix()))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetQueries returns all queries saved in db
+func GetQueries() (*model.Query, error) {
+	db, err := sql.Open("sqlite3", dbPath)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT id, name, url, isActive, filters, createdAt FROM queries")
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+
+	query := model.Query{}
+	for rows.Next() {
+		rows.Scan(&query.ID, &query.Name, &query.URL, &query.IsActive, &query.Filters, &query.CreatedAt)
+	}
+
+	return &query, nil
+}
+
 // CreateDatabase creates sqllite db file in user home dir
 func CreateDatabase() bool {
 

@@ -52,38 +52,11 @@ func init() {
 			},
 		},
 		{
-			Name:    "add, query",
-			Aliases: []string{"a"},
-			Usage:   "adds query to watch to config",
-			Action: func(c *cli.Context) error {
-				command.SaveQuery(c.Args().Get(0))
-				return nil
-			},
-		},
-		{
-			Name:    "clean, clear",
-			Aliases: []string{"c"},
-			Usage:   "clears all query from config",
-			Action: func(c *cli.Context) error {
-				command.ClearQueries()
-				return nil
-			},
-		},
-		{
 			Name:    "print",
 			Aliases: []string{"p"},
 			Usage:   "Prints currently active config file",
 			Action: func(c *cli.Context) error {
 				command.PrintConfigFile()
-				return nil
-			},
-		},
-		{
-			Name:    "list",
-			Aliases: []string{"l"},
-			Usage:   "lists currently saved items",
-			Action: func(c *cli.Context) error {
-				command.ListItems()
 				return nil
 			},
 		},

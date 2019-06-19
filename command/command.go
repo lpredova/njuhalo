@@ -1,6 +1,7 @@
 package command
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -11,17 +12,13 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/jasonlvhit/gocron"
 	"github.com/lpredova/goquery"
-	"github.com/lpredova/njuhalo/alert"
-	"github.com/lpredova/njuhalo/builder"
 	"github.com/lpredova/njuhalo/configuration"
 	"github.com/lpredova/njuhalo/db"
 	"github.com/lpredova/njuhalo/helper"
 	"github.com/lpredova/njuhalo/model"
-	"github.com/lpredova/njuhalo/parser"
 )
 
 var doc *goquery.Document
@@ -166,50 +163,42 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func runParser() error {
-	var page = 0
-	var hasMore = false
+	/*
+		var page = 0
+		var hasMore = false
 
-	if len(conf.Queries) <= 0 {
-		return errors.New("There are no filters in your config, please check help")
-	}
-
-	for _, query := range conf.Queries {
-		builder.SetMainLocation(query.BaseQueryPath)
-		builder.SetFilters(query.Filters)
-
-		doc := builder.GetDoc()
-		status, offer := parser.ParseOffer(doc)
-		if status {
-			alert.SendAlert(conf, offer)
-		}
-
-		hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
-		for hasMore {
-			builder.SetFilters(filters)
-			doc = builder.GetDoc()
-
-			time.Sleep(time.Second * time.Duration(int(conf.SleepIntervalSec)))
-			status, offer := parser.ParseOffer(doc)
-			if status {
-				alert.SendAlert(conf, offer)
+			if len(conf.Queries) <= 0 {
+				return errors.New("There are no filters in your config, please check help")
 			}
 
-			hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
-		}
-		fmt.Println("DONE parsing results")
-	}
+			for _, query := range conf.Queries {
+				builder.SetMainLocation(query.BaseQueryPath)
+				builder.SetFilters(query.Filters)
+
+				doc := builder.GetDoc()
+				status, offer := parser.ParseOffer(doc)
+				if status {
+					alert.SendAlert(conf, offer)
+				}
+
+				hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
+				for hasMore {
+					builder.SetFilters(filters)
+					doc = builder.GetDoc()
+
+					time.Sleep(time.Second * time.Duration(int(conf.SleepIntervalSec)))
+					status, offer := parser.ParseOffer(doc)
+					if status {
+						alert.SendAlert(conf, offer)
+					}
+
+					hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
+				}
+				fmt.Println("DONE parsing results")
+			}
+	*/
 
 	return nil
-}
-
-// ClearQueries removes all queries from config
-func ClearQueries() {
-	if configuration.ClearQueries() {
-		fmt.Println("Queries cleared")
-		return
-	}
-
-	fmt.Println("Error clearing queries")
 }
 
 // SaveQuery method saves query url to config
@@ -245,15 +234,20 @@ func SaveQuery(query string) error {
 				rawFilters[k] = strings.Join(v, "")
 			}
 
+			filters, err := json.Marshal(rawFilters)
+
 			query := model.Query{
-				BaseQueryPath: u.Path,
-				Filters:       rawFilters,
+				Name:    u.Path,
+				URL:     u.Path,
+				Filters: string(filters),
 			}
-			if configuration.AppendFilterToConfig(query) {
+
+			err = db.InsertQuery(query)
+			if err == nil {
 				return nil
 			}
 
-			return errors.New("Error adding URL to filters")
+			return err
 		}
 		return errors.New("Given url is not from njuskalo")
 	}

@@ -1,5 +1,15 @@
+CREATE TABLE queries (
+  id integer PRIMARY KEY AUTOINCREMENT,
+  name text,
+  isActive integer,
+  url text,
+  filters text,
+  createdAt integer
+);
+
 CREATE TABLE items (
   id integer PRIMARY KEY AUTOINCREMENT,
+  queryID integer,
   itemID integer,
   url text,
   name text,
@@ -10,8 +20,8 @@ CREATE TABLE items (
   year text,
   mileage text,
   published text,
-  createdAt integer
+  createdAt integer,
+  FOREIGN KEY (queryID) REFERENCES queries(id),
 );
-
 
 CREATE INDEX index_itemID ON items (itemID);
