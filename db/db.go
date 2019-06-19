@@ -2,10 +2,16 @@ package db
 
 import (
 	"database/sql"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"net/http"
+	"net/url"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/lpredova/njuhalo/helper"
 	"github.com/lpredova/njuhalo/model"
 	_ "github.com/mattn/go-sqlite3" // SQLlite db
 )
@@ -134,6 +140,7 @@ func GetQueries() (*[]model.Query, error) {
 }
 
 // CreateDatabase creates sqllite db file in user home dir
+// TODO update this one with the new tables
 func CreateDatabase() bool {
 
 	err := os.MkdirAll("./storage", 0755)
@@ -189,4 +196,57 @@ func CreateDatabase() bool {
 	}
 
 	return true
+}
+
+// SaveQuery method saves query url to config
+func SaveQuery(query string) error {
+	if len(query) == 0 {
+		return errors.New("Please provide valid njuskalo.hr URL")
+	}
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", query, nil)
+	if err != nil {
+		return err
+	}
+
+	random := helper.RandomString()
+	req.Header.Set("User-Agent", random)
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 200 {
+		u, err := url.Parse(query)
+		if err != nil {
+			return errors.New("Error parsing URL")
+		}
+
+		if u.Host == "www.njuskalo.hr" {
+			parsed, _ := url.ParseQuery(u.RawQuery)
+			rawFilters := make(map[string]string)
+			for k, v := range parsed {
+				rawFilters[k] = strings.Join(v, "")
+			}
+
+			filters, err := json.Marshal(rawFilters)
+
+			query := model.Query{
+				Name:    u.Path,
+				URL:     u.Path,
+				Filters: string(filters),
+			}
+
+			err = InsertQuery(query)
+			if err == nil {
+				return nil
+			}
+
+			return err
+		}
+		return errors.New("Given url is not from njuskalo")
+	}
+	return errors.New("This URL is not alive")
 }

@@ -52,15 +52,6 @@ func init() {
 			},
 		},
 		{
-			Name:    "print",
-			Aliases: []string{"p"},
-			Usage:   "Prints currently active config file",
-			Action: func(c *cli.Context) error {
-				command.PrintConfigFile()
-				return nil
-			},
-		},
-		{
 			Name:    "parse",
 			Aliases: []string{"r"},
 			Usage:   "Runs parser only once",
