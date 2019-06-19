@@ -47,7 +47,7 @@ func GetItems() (*[]model.Offer, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id, url, name, image, price, description, location, year, mileage, published, createdAt FROM items ORDER BY id DESC;")
+	rows, err := db.Query("SELECT id, url, name, image, price, description, location, year, mileage, published, createdAt FROM items ORDER BY id ASC;")
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func InsertQuery(query model.Query) error {
 }
 
 // GetQueries returns all queries saved in db
-func GetQueries() (*model.Query, error) {
+func GetQueries() (*[]model.Query, error) {
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -123,12 +123,14 @@ func GetQueries() (*model.Query, error) {
 	}
 	defer rows.Close()
 
-	query := model.Query{}
+	queries := []model.Query{}
 	for rows.Next() {
+		query := model.Query{}
 		rows.Scan(&query.ID, &query.Name, &query.URL, &query.IsActive, &query.Filters, &query.CreatedAt)
+		queries = append(queries, query)
 	}
 
-	return &query, nil
+	return &queries, nil
 }
 
 // CreateDatabase creates sqllite db file in user home dir

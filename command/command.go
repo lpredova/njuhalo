@@ -12,13 +12,17 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/jasonlvhit/gocron"
 	"github.com/lpredova/goquery"
+	"github.com/lpredova/njuhalo/alert"
+	"github.com/lpredova/njuhalo/builder"
 	"github.com/lpredova/njuhalo/configuration"
 	"github.com/lpredova/njuhalo/db"
 	"github.com/lpredova/njuhalo/helper"
 	"github.com/lpredova/njuhalo/model"
+	"github.com/lpredova/njuhalo/parser"
 )
 
 var doc *goquery.Document
@@ -163,40 +167,42 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func runParser() error {
-	/*
-		var page = 0
-		var hasMore = false
+	var page = 0
+	var hasMore = false
 
-			if len(conf.Queries) <= 0 {
-				return errors.New("There are no filters in your config, please check help")
+	queries, err := db.GetQueries()
+	if err != nil {
+		return errors.New("There are no filters in your config, please check help")
+	}
+
+	for _, query := range *queries {
+		filters := make(map[string]string)
+		json.Unmarshal([]byte(query.Filters), &filters)
+
+		builder.SetMainLocation(query.URL)
+		builder.SetFilters(filters)
+
+		doc := builder.GetDoc()
+		status, offer := parser.ParseOffer(doc)
+		if status {
+			alert.SendAlert(conf, offer)
+		}
+
+		hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
+		for hasMore {
+			builder.SetFilters(filters)
+			doc = builder.GetDoc()
+
+			time.Sleep(time.Second * time.Duration(int(conf.SleepIntervalSec)))
+			status, offer := parser.ParseOffer(doc)
+			if status {
+				alert.SendAlert(conf, offer)
 			}
 
-			for _, query := range conf.Queries {
-				builder.SetMainLocation(query.BaseQueryPath)
-				builder.SetFilters(query.Filters)
-
-				doc := builder.GetDoc()
-				status, offer := parser.ParseOffer(doc)
-				if status {
-					alert.SendAlert(conf, offer)
-				}
-
-				hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
-				for hasMore {
-					builder.SetFilters(filters)
-					doc = builder.GetDoc()
-
-					time.Sleep(time.Second * time.Duration(int(conf.SleepIntervalSec)))
-					status, offer := parser.ParseOffer(doc)
-					if status {
-						alert.SendAlert(conf, offer)
-					}
-
-					hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
-				}
-				fmt.Println("DONE parsing results")
-			}
-	*/
+			hasMore, page, filters = parser.GetNextResultPage(doc, page, filters)
+		}
+		fmt.Println("DONE parsing results")
+	}
 
 	return nil
 }
