@@ -151,12 +151,19 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err.Error())
 	}
 
+	queries, err := db.GetQueries()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
 	type viewData struct {
-		Offers *[]model.Offer
+		Offers  *[]model.Offer
+		Queries *[]model.Query
 	}
 
 	data := viewData{
-		Offers: offers,
+		Offers:  offers,
+		Queries: queries,
 	}
 
 	template.Must(
