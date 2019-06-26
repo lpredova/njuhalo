@@ -31,8 +31,9 @@
             <input type="submit" value="Fetch results">
         </form>
         <h2>Queries</h2>
+        <span><a href="/" >Dashboard |</a></span>
         {{range .Queries}}
-            <span>{{.Name}}</span>
+            <span><a href="?offerId={{.ID}}" >{{.Name}}</a></span>
             <form method="POST" action="/delete-query">
                 <input type="hidden" value="{{.ID}}" name="id"/>
                 <input type="submit" value="Delete">            
@@ -48,7 +49,7 @@
                 <a href="{{.URL}}" target="_blank">{{.Name}}</a>
                 </br>
                 <a href="{{.URL}}" target="_blank"><img src="{{.Image}}"></a>
-                <p><b>{{.Price}}</b>&nbsp;{{.Description}}</p>
+                <p><b>{{.Price}}</b>&nbsp;{{.Description}}</p> 
                 <p>Lokacija: {{.Location}}</p>
                 <p>Kilometraža: {{.Mileage}}km</p>
                 <p>Godina: {{.Year}}</p>
