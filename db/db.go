@@ -274,3 +274,21 @@ func SaveQuery(query string) error {
 	}
 	return errors.New("This URL is not alive")
 }
+
+// DeleteQuery method saves query url to config
+func DeleteQuery(queryID int64) error {
+	db, err := sql.Open("sqlite3", dbPath)
+	db.Exec("PRAGMA foreign_keys = ON;")
+
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	_, err = db.Exec(fmt.Sprintf("DELETE FROM queries where id = %d", queryID))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

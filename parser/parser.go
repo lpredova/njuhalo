@@ -17,28 +17,25 @@ import (
 
 // Run executes parser with config saved in db
 func Run() error {
-	var page = 0
-	var hasMore = false
-
 	queries, err := db.GetQueries()
 	if err != nil {
 		return errors.New("There are no filters in your config, please check help")
 	}
 
 	for _, query := range *queries {
+		page := 0
+		hasMore := false
+		var doc *goquery.Document
+
 		filters := make(map[string]string)
 		json.Unmarshal([]byte(query.Filters), &filters)
 
+		filters["page"] = ""
 		builder.SetMainLocation(query.URL)
 		builder.SetFilters(filters)
 
-		doc := builder.GetDoc()
+		doc = builder.GetDoc()
 		parseOffer(doc, query.ID)
-		/*
-			if status {
-				alert.SendAlert(conf, offer)
-			}
-		*/
 
 		hasMore, page, filters = getNextResultPage(doc, page, filters)
 		for hasMore {
@@ -47,14 +44,9 @@ func Run() error {
 
 			time.Sleep(time.Second * time.Duration(int(1)))
 			parseOffer(doc, query.ID)
-			/*
-				if status {
-					alert.SendAlert(conf, offer)
-				}
-			*/
-
 			hasMore, page, filters = getNextResultPage(doc, page, filters)
 		}
+
 		fmt.Println("DONE parsing results")
 	}
 
