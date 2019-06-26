@@ -36,7 +36,7 @@ func init() {
 		{
 			Name:    "monitor",
 			Aliases: []string{"m"},
-			Usage:   "start monitoring njuskalo for items",
+			Usage:   "Start monitoring njuskalo for items",
 			Action: func(c *cli.Context) error {
 				command.Monitor()
 				return nil
@@ -45,45 +45,9 @@ func init() {
 		{
 			Name:    "serve",
 			Aliases: []string{"s"},
-			Usage:   "start monitoring njuskalo for items",
+			Usage:   "Start local server",
 			Action: func(c *cli.Context) error {
 				command.Serve()
-				return nil
-			},
-		},
-		{
-			Name:    "add, query",
-			Aliases: []string{"a"},
-			Usage:   "adds query to watch to config",
-			Action: func(c *cli.Context) error {
-				command.SaveQuery(c.Args().Get(0))
-				return nil
-			},
-		},
-		{
-			Name:    "clean, clear",
-			Aliases: []string{"c"},
-			Usage:   "clears all query from config",
-			Action: func(c *cli.Context) error {
-				command.ClearQueries()
-				return nil
-			},
-		},
-		{
-			Name:    "print",
-			Aliases: []string{"p"},
-			Usage:   "Prints currently active config file",
-			Action: func(c *cli.Context) error {
-				command.PrintConfigFile()
-				return nil
-			},
-		},
-		{
-			Name:    "list",
-			Aliases: []string{"l"},
-			Usage:   "lists currently saved items",
-			Action: func(c *cli.Context) error {
-				command.ListItems()
 				return nil
 			},
 		},

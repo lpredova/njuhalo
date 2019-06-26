@@ -30,6 +30,14 @@
         <form method="POST" action="/fetch-results">
             <input type="submit" value="Fetch results">
         </form>
+        <h2>Queries</h2>
+        {{range .Queries}}
+            <span>{{.Name}}</span>
+            <form method="POST" action="/delete-query">
+                <input type="hidden" value="{{.ID}}" name="id"/>
+                <input type="submit" value="Delete">            
+            </form>
+        {{end}}
         <hr>
         <input id="search" type="text" placeholder="Type to filter..." autofocus/>
         <h1>Dashboard</h1>
