@@ -59,7 +59,6 @@ func parseOffer(doc *goquery.Document, queryID int64) (bool, []model.Offer) {
 	var offers []model.Offer
 	var finalOffers []model.Offer
 
-	offers = GetListContent(doc, ".EntityList--VauVau .EntityList-item article", offers)
 	offers = GetListContent(doc, ".EntityList--Standard .EntityList-item article", offers)
 
 	if len(offers) == 0 {
@@ -68,9 +67,10 @@ func parseOffer(doc *goquery.Document, queryID int64) (bool, []model.Offer) {
 	}
 
 	for index, offer = range offers {
-		if !db.GetItem(offer.ID) {
+		if !db.GetItem(offer.ItemID) {
 			offer.QueryID = queryID
 			finalOffers = append(finalOffers, offer)
+			continue
 		}
 	}
 	fmt.Println(fmt.Sprintf("Parsed %d results", index))

@@ -5,6 +5,7 @@ type Offer struct {
 	ID          int64
 	QueryID     int64
 	ItemID      string
+	IsNew       int64
 	URL         string
 	Name        string
 	Image       string
