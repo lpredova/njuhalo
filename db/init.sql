@@ -21,7 +21,7 @@ CREATE TABLE items (
   mileage text,
   published text,
   createdAt integer,
-  FOREIGN KEY (queryID) REFERENCES queries(id),
+  FOREIGN KEY (queryID) REFERENCES queries(id) ON DELETE CASCADE
 );
 
 CREATE INDEX index_itemID ON items (itemID);

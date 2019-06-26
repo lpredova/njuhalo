@@ -44,8 +44,8 @@ func InsertItem(offers []model.Offer) bool {
 	return true
 }
 
-// GetItems gets all items stored in database
-func GetItems() (*[]model.Offer, error) {
+// GetDashboardItems gets all items stored in database
+func GetDashboardItems() (*[]model.Offer, error) {
 
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
@@ -54,6 +54,31 @@ func GetItems() (*[]model.Offer, error) {
 	defer db.Close()
 
 	rows, err := db.Query("SELECT id, url, name, image, price, description, location, year, mileage, published, createdAt FROM items ORDER BY id ASC;")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	offers := []model.Offer{}
+	for rows.Next() {
+		offer := model.Offer{}
+		rows.Scan(&offer.ID, &offer.URL, &offer.Name, &offer.Image, &offer.Price, &offer.Description, &offer.Location, &offer.Year, &offer.Mileage, &offer.Published, &offer.CreatedAt)
+		offers = append(offers, offer)
+	}
+
+	return &offers, nil
+}
+
+// GetQueryItems gets all query related items stored in the database
+func GetQueryItems(queryID int64) (*[]model.Offer, error) {
+	db, err := sql.Open("sqlite3", dbPath)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	query := fmt.Sprintf("SELECT id, url, name, image, price, description, location, year, mileage, published, createdAt FROM items WHERE queryId= %d ORDER BY id ASC;", queryID)
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +165,6 @@ func GetQueries() (*[]model.Query, error) {
 }
 
 // CreateDatabase creates sqllite db file in user home dir
-// TODO update this one with the new tables
 func CreateDatabase() bool {
 
 	err := os.MkdirAll("./storage", 0755)
@@ -249,4 +273,22 @@ func SaveQuery(query string) error {
 		return errors.New("Given url is not from njuskalo")
 	}
 	return errors.New("This URL is not alive")
+}
+
+// DeleteQuery method saves query url to config
+func DeleteQuery(queryID int64) error {
+	db, err := sql.Open("sqlite3", dbPath)
+	db.Exec("PRAGMA foreign_keys = ON;")
+
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	_, err = db.Exec(fmt.Sprintf("DELETE FROM queries where id = %d", queryID))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

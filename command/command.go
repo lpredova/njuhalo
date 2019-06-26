@@ -68,6 +68,7 @@ func Serve() {
 	http.HandleFunc("/", handler.IndexHandler)
 	http.HandleFunc("/oops", handler.ErrorHandler)
 	http.HandleFunc("/save-query", handler.SaveQueryHandler)
+	http.HandleFunc("/delete-query", handler.DeleteQueryHandler)
 	http.HandleFunc("/fetch-results", handler.FetchResultsHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
