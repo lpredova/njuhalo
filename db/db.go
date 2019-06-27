@@ -27,14 +27,14 @@ func InsertItem(offers []model.Offer) bool {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("INSERT INTO items(queryID, itemID, url, name, image, price, description, location, year, mileage, published, createdAt) values(?,?,?,?,?,?,?,?,?,?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO items(queryID, itemID, isNew, url, name, image, price, description, location, year, mileage, published, createdAt) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
 	}
 
 	for _, offer := range offers {
-		_, err := stmt.Exec(offer.QueryID, offer.ItemID, offer.URL, offer.Name, offer.Image, offer.Price, offer.Description, offer.Location, offer.Year, offer.Mileage, offer.Published, int32(time.Now().Unix()))
+		_, err := stmt.Exec(offer.QueryID, offer.ItemID, 1, offer.URL, offer.Name, offer.Image, offer.Price, offer.Description, offer.Location, offer.Year, offer.Mileage, offer.Published, int32(time.Now().Unix()))
 		if err != nil {
 			fmt.Println(err.Error())
 			return false
@@ -53,7 +53,7 @@ func GetDashboardItems() (*[]model.Offer, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id, url, name, image, price, description, location, year, mileage, published, createdAt FROM items ORDER BY id ASC;")
+	rows, err := db.Query(fmt.Sprintf("SELECT id, isNew, url, name, image, price, description, location, year, mileage, published, createdAt FROM items WHERE isNew = %d ORDER BY isNew DESC, id ASC;", 1))
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func GetDashboardItems() (*[]model.Offer, error) {
 	offers := []model.Offer{}
 	for rows.Next() {
 		offer := model.Offer{}
-		rows.Scan(&offer.ID, &offer.URL, &offer.Name, &offer.Image, &offer.Price, &offer.Description, &offer.Location, &offer.Year, &offer.Mileage, &offer.Published, &offer.CreatedAt)
+		rows.Scan(&offer.ID, &offer.IsNew, &offer.URL, &offer.Name, &offer.Image, &offer.Price, &offer.Description, &offer.Location, &offer.Year, &offer.Mileage, &offer.Published, &offer.CreatedAt)
 		offers = append(offers, offer)
 	}
 
@@ -77,7 +77,7 @@ func GetQueryItems(queryID int64) (*[]model.Offer, error) {
 	}
 	defer db.Close()
 
-	query := fmt.Sprintf("SELECT id, url, name, image, price, description, location, year, mileage, published, createdAt FROM items WHERE queryId= %d ORDER BY id ASC;", queryID)
+	query := fmt.Sprintf("SELECT id, isNew, url, name, image, price, description, location, year, mileage, published, createdAt FROM items WHERE queryId= %d ORDER BY isNew DESC, id ASC;", queryID)
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func GetQueryItems(queryID int64) (*[]model.Offer, error) {
 	offers := []model.Offer{}
 	for rows.Next() {
 		offer := model.Offer{}
-		rows.Scan(&offer.ID, &offer.URL, &offer.Name, &offer.Image, &offer.Price, &offer.Description, &offer.Location, &offer.Year, &offer.Mileage, &offer.Published, &offer.CreatedAt)
+		rows.Scan(&offer.ID, &offer.IsNew, &offer.URL, &offer.Name, &offer.Image, &offer.Price, &offer.Description, &offer.Location, &offer.Year, &offer.Mileage, &offer.Published, &offer.CreatedAt)
 		offers = append(offers, offer)
 	}
 
@@ -95,7 +95,7 @@ func GetQueryItems(queryID int64) (*[]model.Offer, error) {
 }
 
 // GetItem method that checks if there is alreay offer with that ID
-func GetItem(itemID int64) bool {
+func GetItem(itemID string) bool {
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -103,14 +103,15 @@ func GetItem(itemID int64) bool {
 	}
 	defer db.Close()
 
-	rows, err := db.Query(fmt.Sprintf("SELECT * FROM items where itemID = %d", itemID))
+	var count int
+	err = db.QueryRow(fmt.Sprintf("SELECT COUNT(id) FROM items WHERE isNew=%d AND itemID=%s", 1, itemID)).Scan(&count)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
 	}
-	defer rows.Close()
 
-	for rows.Next() {
+	if count != 0 {
+		_, err = db.Exec(fmt.Sprintf("UPDATE items SET isNew=%d WHERE itemID = %s", 0, itemID))
 		return true
 	}
 

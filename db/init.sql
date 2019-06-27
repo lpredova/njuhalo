@@ -11,6 +11,7 @@ CREATE TABLE items (
   id integer PRIMARY KEY AUTOINCREMENT,
   queryID integer,
   itemID integer,
+  isNew integer,
   url text,
   name text,
   image text,
