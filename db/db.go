@@ -46,7 +46,6 @@ func InsertItem(offers []model.Offer) bool {
 
 // GetDashboardItems gets all items stored in database
 func GetDashboardItems() (*[]model.Offer, error) {
-
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return nil, err
@@ -126,12 +125,12 @@ func InsertQuery(query model.Query) error {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("INSERT INTO queries(name, isActive, url, filters, createdAt) values(?,?,?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO queries(name, monitoringInterval, isActive, url, filters, createdAt) values(?,?,?,?,?,?)")
 	if err != nil {
 		return err
 	}
 
-	_, err = stmt.Exec(query.Name, "Y", query.URL, query.Filters, int32(time.Now().Unix()))
+	_, err = stmt.Exec(query.Name, query.MonitoringInterval, "Y", query.URL, query.Filters, int32(time.Now().Unix()))
 	if err != nil {
 		return err
 	}
@@ -148,7 +147,7 @@ func GetQueries() (*[]model.Query, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id, name, url, isActive, filters, createdAt FROM queries")
+	rows, err := db.Query("SELECT id, monitoringInterval, name, url, isActive, filters, createdAt FROM queries")
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
@@ -158,7 +157,7 @@ func GetQueries() (*[]model.Query, error) {
 	queries := []model.Query{}
 	for rows.Next() {
 		query := model.Query{}
-		rows.Scan(&query.ID, &query.Name, &query.URL, &query.IsActive, &query.Filters, &query.CreatedAt)
+		rows.Scan(&query.ID, &query.MonitoringInterval, &query.Name, &query.URL, &query.IsActive, &query.Filters, &query.CreatedAt)
 		queries = append(queries, query)
 	}
 
@@ -224,7 +223,7 @@ func CreateDatabase() bool {
 }
 
 // SaveQuery method saves query url to config
-func SaveQuery(query string) error {
+func SaveQuery(query string, monitoringInterval int64) error {
 	if len(query) == 0 {
 		return errors.New("Please provide valid njuskalo.hr URL")
 	}
@@ -258,18 +257,20 @@ func SaveQuery(query string) error {
 
 			filters, err := json.Marshal(rawFilters)
 
+			fmt.Println(monitoringInterval)
 			query := model.Query{
-				Name:    u.Path,
-				URL:     u.Path,
-				Filters: string(filters),
+				Name:               u.Path,
+				URL:                u.Path,
+				MonitoringInterval: monitoringInterval,
+				Filters:            string(filters),
 			}
 
 			err = InsertQuery(query)
-			if err == nil {
-				return nil
+			if err != nil {
+				return err
 			}
 
-			return err
+			return nil
 		}
 		return errors.New("Given url is not from njuskalo")
 	}

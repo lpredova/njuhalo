@@ -2,6 +2,7 @@ CREATE TABLE queries (
   id integer PRIMARY KEY AUTOINCREMENT,
   name text,
   isActive integer,
+  monitoringInterval integer,
   url text,
   filters text,
   createdAt integer
