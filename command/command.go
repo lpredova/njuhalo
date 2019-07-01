@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
+	"github.com/jasonlvhit/gocron"
 	"github.com/lpredova/goquery"
 	"github.com/lpredova/njuhalo/configuration"
 	"github.com/lpredova/njuhalo/db"
@@ -41,28 +45,26 @@ func Parse() {
 
 // Monitor starts watcher that monitors items
 func Monitor() {
-	/*
-		if conf.RunIntervalMin <= 0 {
-			fmt.Println("Please provide valid watcher run interval (larger than 0)")
-			return
-		}
+	if conf.RunIntervalMin <= 0 {
+		fmt.Println("Please provide valid watcher run interval (larger than 0)")
+		return
+	}
 
-		gocron.Every(uint64(conf.RunIntervalMin)).Minutes().Do(parser.Run())
-		<-gocron.Start()
+	gocron.Every(uint64(conf.RunIntervalMin)).Minutes().Do(parser.Run())
+	<-gocron.Start()
 
-		c := make(chan os.Signal, 2)
-		signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-		go func() {
-			<-c
-			gocron.Clear()
-			os.Exit(1)
-		}()
-
-	*/
+	c := make(chan os.Signal, 2)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		gocron.Clear()
+		os.Exit(1)
+	}()
 }
 
 // Serve for listing results in browser
 func Serve() {
+
 	fmt.Println("Serving results: http://localhost:8080")
 	http.HandleFunc("/", handler.IndexHandler)
 	http.HandleFunc("/oops", handler.ErrorHandler)
