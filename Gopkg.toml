@@ -1,0 +1,11 @@
+[[constraint]]
+  branch = "master"
+  name = "github.com/lpredova/goquery"
+
+[[constraint]]
+  name = "gopkg.in/mailgun/mailgun-go.v1"
+  version = "1.1.0"
+
+[prune]
+  go-tests = true
+  unused-packages = true
