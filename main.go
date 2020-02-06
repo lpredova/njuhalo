@@ -11,7 +11,7 @@ var app *cli.App
 
 func init() {
 	app = cli.NewApp()
-	app.Version = "1.0.2"
+	app.Version = "1.0.3"
 	app.Name = "njuhalo"
 	app.Author = "Lovro Predovan"
 	app.Email = "lovro.predovan[at]gmail.com"

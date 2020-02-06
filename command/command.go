@@ -78,7 +78,7 @@ func StartMonitoring() {
 
 		runParser()
 
-		gocron.Every(uint64(conf.RunIntervalMin)).Minute().Do(runParser)
+		gocron.Every(uint64(conf.RunIntervalMin)).Minutes().Do(runParser)
 		<-gocron.Start()
 
 		c := make(chan os.Signal, 2)
