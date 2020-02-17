@@ -1,3 +1,5 @@
+config.*
 storage/*
 config.json
 .DS_Store
+*.db
