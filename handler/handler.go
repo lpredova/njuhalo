@@ -80,12 +80,14 @@ func SaveQueryHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	queryString := strings.Join(r.Form["query"], " ")
-	if queryString == "" {
+	intervalString := strings.Join(r.Form["interval"], " ")
+	if queryString == "" || intervalString == "" {
 		http.Redirect(w, r, "/", 301)
 		return
 	}
 
-	err := db.SaveQuery(queryString)
+	i, _ := strconv.ParseInt(intervalString, 10, 64)
+	err := db.SaveQuery(queryString, i)
 	if err == nil {
 		parser.Run()
 		http.Redirect(w, r, "/", 301)

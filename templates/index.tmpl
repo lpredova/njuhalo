@@ -28,6 +28,9 @@
     <body>
         <form method="POST" action="/save-query">
             <input id="query" type="text" placeholder="Add new query" name="query"/>
+            <br>
+            <label for="interval">monitor for this query every:</label>
+            <input id="interval" type="number" min="1" placeholder="(min)" name="interval"/>
             <input type="submit" value="Add query">
         </form>
         <form method="POST" action="/fetch-results">
@@ -37,7 +40,7 @@
         <span><a href="/" >Novi |</a></span>
         {{range .Queries}}
             <span>
-                <a href="?offerId={{.ID}}" >{{.Name}}</a>
+                <a href="?offerId={{.ID}}" >{{.Name}} <span>({{.MonitoringInterval}} min)</span></a>
                 <form method="POST" action="/delete-query">
                     <input type="hidden" value="{{.ID}}" name="queryId"/>
                     <input type="submit" value="Delete">            

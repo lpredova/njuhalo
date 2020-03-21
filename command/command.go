@@ -38,7 +38,7 @@ func CreateConfigFile() {
 	}
 }
 
-// Parse runs parser only once :)
+// Parse runs parser only once
 func Parse() {
 	parser.Run()
 }
@@ -64,6 +64,7 @@ func Monitor() {
 
 // Serve for listing results in browser
 func Serve() {
+
 	fmt.Println("Serving results: http://localhost:8080")
 	http.HandleFunc("/", handler.IndexHandler)
 	http.HandleFunc("/oops", handler.ErrorHandler)
