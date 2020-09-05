@@ -19,8 +19,13 @@ Clone the repository !
 $ git clone git@github.com:lpredova/njuhalo.git
 ```
 
-Now you can use njuhalo from local folder by running:
+Build the executable:
  
+```bash
+$ go build
+```
+
+Run it:
 ```bash
 $ ./njuhalo
 ```
