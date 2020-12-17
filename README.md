@@ -1,13 +1,8 @@
 new(/njuː/)halo
 ===========
-[![Go Report Card](https://goreportcard.com/badge/github.com/lpredova/njuhalo)](https://goreportcard.com/report/github.com/lpredova/njuhalo)
-
-
-![Njuh njuh](https://68.media.tumblr.com/1da155f441f0c4030225c3811e0c32cd/tumblr_o6ngw4Ve1t1rt6u7do1_500.gif)
-
 
 Njuhalo is watcher written in Go. 
-It watches croatian online store [Njuškalo.hr](https://www.njuskalo.hr) and
+It watches croatian online store [njuskalo](https://www.njuskalo.hr) and
 notifies owner for new occurrences of wanted items that match filters in config.
 
 It supports mailgun and slack notifications at the moment.
@@ -24,6 +19,47 @@ Build the executable:
 ```bash
 $ go build
 ```
+
+or build it for specific architecture
+```
+env GOOS=target-OS GOARCH=target-architecture go build
+
+```
+where target-OS and target-architecture can be: 
+
+```
+GOOS - Target Operating System	GOARCH - Target Platform
+android	arm
+darwin	386
+darwin	amd64
+darwin	arm
+darwin	arm64
+dragonfly	amd64
+freebsd	386
+freebsd	amd64
+freebsd	arm
+linux	386
+linux	amd64
+linux	arm
+linux	arm64
+linux	ppc64
+linux	ppc64le
+linux	mips
+linux	mipsle
+linux	mips64
+linux	mips64le
+netbsd	386
+netbsd	amd64
+netbsd	arm
+openbsd	386
+openbsd	amd64
+openbsd	arm
+plan9	386
+plan9	amd64
+solaris	amd64
+windows	386
+windows	amd64
+````
 
 Run it:
 ```bash
